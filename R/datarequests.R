@@ -469,6 +469,7 @@ chs_data_request <- function(data,
                "Prosecutor Objects",
                "Plea Reason Unknown",
                "Other Reasons",
+               "Other Reason",
                "-99999999999999999999")
            )
     ) %>%
