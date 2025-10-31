@@ -17,6 +17,7 @@ LazyData: true
 Imports: 
     dplyr,
     forcats,
+    fs,
     rstudioapi,
     stringr,
     tibble,
