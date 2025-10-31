@@ -468,7 +468,7 @@ chs_data_request <- function(data,
                "Prosecutor did not Object/Plea Negotiation",
                "Prosecutor Objects",
                "Plea Reason Unknown",
-               "Other Reason",
+               "Other Reasons",
                "-99999999999999999999")
            )
     ) %>%
@@ -565,7 +565,7 @@ chs_data_request <- function(data,
                "Prosecutor did not Object/Plea Negotiation",
                "Prosecutor Objects",
                "Plea Reason Unknown",
-               "Other Reason",
+               "Other Reasons",
                "-99999999999999999999")
            )
     ) %>%
