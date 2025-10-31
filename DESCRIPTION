@@ -1,0 +1,25 @@
+Package: drequests
+Type: Package
+Title: Exports case list and report outputs into Excel files according to request criteria
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Matthew", "Hlina",
+      email = "hlina.matt@gmail.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: CC0
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr,
+    forcats,
+    rstudioapi,
+    stringr,
+    tibble,
+    tidyr,
+    writexl
+RoxygenNote: 7.3.3
