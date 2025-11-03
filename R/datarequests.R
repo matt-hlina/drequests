@@ -165,7 +165,7 @@ chs_data_request <- function(data,
 
   write_xlsx(data_set, path = excel_file, col_names = TRUE)
 
-  file_show(path = excel_file)
+  file.show(path = excel_file)
 
   ########################################################################
   # Create report tables #
@@ -592,7 +592,7 @@ chs_data_request <- function(data,
 
   write_xlsx(excel_list, path = excel_file, col_names = TRUE)
 
-  file_show(path = excel_file)
+  file.show(path = excel_file)
 }
 
 
