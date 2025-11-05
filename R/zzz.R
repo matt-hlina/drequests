@@ -29,7 +29,6 @@ utils::globalVariables(c(
   "district",
   "doff",
   "durdep",
-  "file_show",
   "histall",
   "history",
   "impose",

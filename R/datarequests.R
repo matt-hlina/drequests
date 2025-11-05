@@ -1,14 +1,5 @@
 #' Check data request
-#' @import dplyr
-#' @import forcats
-#' @import rstudioapi
-#' @import stringr
-#' @import tibble
-#' @import tidyr
-#' @import writexl
-#'
-#' @export
-#'
+
 #' @param data 'data.frame' of Sentencing Guidelines public data set.
 #' @param case_list_path pathway where the case list will be saved.
 #' @param case_list_name name of the case list file.
@@ -20,6 +11,8 @@
 #' variablename_max, reason, and preason. variablename_min and _max are used for
 #' selecting a range of data, (i.e., sentyear) and reason and preason are used for
 #' selecting departure reasons and plea reasons.
+#'
+#' @export
 
 chs_data_request <- function(data,
                              case_list_path,
@@ -29,46 +22,7 @@ chs_data_request <- function(data,
                              ...) {
 
   filters <- list(...)
-  df1 <- data
-
-  for (name in names(filters)) {
-    value <- filters[[name]]
-
-    if (is.null(value)) next
-
-    if (str_ends(name, "_min")) {
-      var <- str_remove(name, "_min$")
-      df1 <- df1 %>% filter(.data[[var]] >= value)
-
-    } else if (str_ends(name, "_max")) {
-      var <- str_remove(name, "_max$")
-      df1 <- df1 %>% filter(.data[[var]] <= value)
-
-    } else if (length(value) > 1) {
-      df1 <- df1 %>% filter(.data[[name]] %in% value)
-
-    } else if (name == "reason") {
-      df1 <- df1 %>%
-        mutate(reason_match = if_else(
-          reason1 == value | reason2 == value | reason3 == value | reason4 == value,
-          1, 0
-        )) %>%
-        filter(reason_match == 1) %>%
-        select(-reason_match)
-
-    } else if (name == "preason") {
-      df1 <- df1 %>%
-        mutate(preason_match = if_else(
-          preason1 == value | preason2 == value | preason3 == value,
-          1, 0
-        )) %>%
-        filter(preason_match == 1) %>%
-        select(-preason_match)
-
-    } else {
-      df1 <- df1 %>% filter(.data[[name]] == value)
-    }
-  }
+  df1 <- requested_cases(data, filters)
 
   ###########################################################################
   # Everything below is pipeline
@@ -76,94 +30,80 @@ chs_data_request <- function(data,
 
   # Create case list #
   data_set <- df1 %>%
-    mutate(county = as_factor(county),
-           Agecat = as_factor(Agecat),
-           sex = as_factor(sex),
-           race = as_factor(race),
-           severity = as_factor(severity),
-           severity = case_when(
-             severity == "51" ~ "D1",
-             severity == "52" ~ "D2",
-             severity == "53" ~ "D3",
-             severity == "54" ~ "D4",
-             severity == "55" ~ "D5",
-             severity == "56" ~ "D6",
-             severity == "57" ~ "D7",
-             severity == "58" ~ "D8",
-             severity == "59" ~ "D9",
-             TRUE ~ severity),
-           typecust = as_factor(typecust),
-           presumpt = as_factor(presumpt),
-           plea = as_factor(plea),
-           inctype = as_factor(inctype),
-           stayexec = as_factor(stayexec),
-           impose = as_factor(impose),
-           condconf = as_factor(condconf),
-           consec = as_factor(consec),
-           dispdep = as_factor(dispdep),
-           durdep = as_factor(durdep),
-           cnsdep = as_factor(cnsdep),
-           reason1 = as_factor(reason1),
-           reason2 = as_factor(reason2),
-           reason3 = as_factor(reason3),
-           reason4 = as_factor(reason4),
-           preason1 = as_factor(preason1),
-           preason2 = as_factor(preason2),
-           preason3 = as_factor(preason3),
-           Offense = as_factor(Offense),
+    dplyr::mutate(
+      severity = dplyr::case_when(
+        severity == "51" ~ "D1",
+        severity == "52" ~ "D2",
+        severity == "53" ~ "D3",
+        severity == "54" ~ "D4",
+        severity == "55" ~ "D5",
+        severity == "56" ~ "D6",
+        severity == "57" ~ "D7",
+        severity == "58" ~ "D8",
+        severity == "59" ~ "D9",
+        TRUE ~ severity
+      ),
+      dplyr::across(
+        c(
+          county, Agecat, sex, race, severity, typecust, presumpt, plea,
+          inctype, stayexec, impose, condconf, consec, dispdep, durdep,
+          cnsdep, reason1, reason2, reason3, reason4,
+          preason1, preason2, preason3, Offense
+        ),
+        as.factor
+      )
     ) %>%
-    arrange(district,
-            county,
-            jlname,
-            sentyear) %>%
-    select("Conviction Statute" = convstat,
-           "Offense Name" = Offense_Title,
-           "Year Sentenced" = sentyear,
-           "District" = district,
-           "County" = county,
-           "Judge Last Name" = jlname,
-           "Judge First Name" = jfname,
-           "Case Number" = dcnum,
-           "Count Number" = count,
-           "Attempt" = attempt,
-           "Conspiracy" = conspir,
-           "Age Category" = Agecat,
-           "Sex" = sex,
-           "Race" = race,
-           "Offense Date" = doff,
-           "Severity Level" = severity,
-           "Type of Custody Offender on at Time of Offense" = typecust,
-           "Total Criminal History Points" = histall,
-           "Criminal History Score" = history,
-           "Presumptive Disposition" = presumpt,
-           "Presumptive Duration (months)" = time,
-           "Lower Range" = Mintime,
-           "Upper Range" = Maxtime,
-           "Plea" = plea,
-           "Pronounced Incarceration Type" = inctype,
-           "Pronounced Confinement (months)" = confine,
-           "Stay of Execution" = stayexec,
-           "Stay of Imposition" = impose,
-           "Length of Stay" = staylnth,
-           "Conditional Confinement (days)" = condconf,
-           "Received Consecutive Sentence" = consec,
-           "Total Consecutive Sentence (months)" = aggsentc,
-           "Dispositional Departure" = dispdep,
-           "Durational Departure" = durdep,
-           "Consecutive Departure" = cnsdep,
-           "Departure Reason 1" = reason1,
-           "Departure Reason 2" = reason2,
-           "Departure Reason 3" = reason3,
-           "Departure Reason 4" = reason4,
-           "Plea Reason 1" = preason1,
-           "Plea Reason 2" = preason2,
-           "Plea Reason 3" = preason3,
-           "Penalty Statute" = penaltystat
+    dplyr::arrange(district, county, jlname, sentyear) %>%
+    dplyr::select(
+      "Conviction Statute" = convstat,
+      "Offense Name" = Offense_Title,
+      "Year Sentenced" = sentyear,
+      "District" = district,
+      "County" = county,
+      "Judge Last Name" = jlname,
+      "Judge First Name" = jfname,
+      "Case Number" = dcnum,
+      "Count Number" = count,
+      "Attempt" = attempt,
+      "Conspiracy" = conspir,
+      "Age Category" = Agecat,
+      "Sex" = sex,
+      "Race" = race,
+      "Offense Date" = doff,
+      "Severity Level" = severity,
+      "Type of Custody Offender on at Time of Offense" = typecust,
+      "Total Criminal History Points" = histall,
+      "Criminal History Score" = history,
+      "Presumptive Disposition" = presumpt,
+      "Presumptive Duration (months)" = time,
+      "Lower Range" = Mintime,
+      "Upper Range" = Maxtime,
+      "Plea" = plea,
+      "Pronounced Incarceration Type" = inctype,
+      "Pronounced Confinement (months)" = confine,
+      "Stay of Execution" = stayexec,
+      "Stay of Imposition" = impose,
+      "Length of Stay" = staylnth,
+      "Conditional Confinement (days)" = condconf,
+      "Received Consecutive Sentence" = consec,
+      "Total Consecutive Sentence (months)" = aggsentc,
+      "Dispositional Departure" = dispdep,
+      "Durational Departure" = durdep,
+      "Consecutive Departure" = cnsdep,
+      "Departure Reason 1" = reason1,
+      "Departure Reason 2" = reason2,
+      "Departure Reason 3" = reason3,
+      "Departure Reason 4" = reason4,
+      "Plea Reason 1" = preason1,
+      "Plea Reason 2" = preason2,
+      "Plea Reason 3" = preason3,
+      "Penalty Statute" = penaltystat
     )
+
 
   excel_file <- file.path(case_list_path, case_list_name)
 
-  write_xlsx(data_set, path = excel_file, col_names = TRUE)
+  writexl::write_xlsx(data_set, path = excel_file, col_names = TRUE)
 
   file.show(path = excel_file)
 
@@ -171,22 +111,23 @@ chs_data_request <- function(data,
   # Create report tables #
   # Total cases by CHS
   total_cases_by_chs <- df1 %>%
-    group_by(history) %>%
-    summarize(N = n(), .groups = "drop") %>%
-    mutate(history = as.character(history)) %>%
-    complete(history = as.character(0:6), fill = list(N = 0)) %>%
-    mutate(
-      history = factor(history, levels = as.character(0:6)),
-      N = as_factor(N)
+    dplyr::group_by(history) %>%
+    dplyr::summarize(N = n(), .groups = "drop") %>%
+    dplyr::mutate(history = as.character(history)) %>%
+    tidyr::complete(history = as.character(0:6), fill = list(N = 0)) %>%
+    dplyr::mutate(
+      history = forcats::factor(history, levels = as.character(0:6)),
+      N = as.factor(N)
     ) %>%
-    arrange(history)
+    dplyr::arrange(history)
 
   # Total cases
   total_case <- df1 %>%
-    summarize(N = n()) %>%
-    mutate(history = "Total",
-           N = as_factor(N)) %>%
-    select(history, N)
+    dplyr::summarize(N = n()) %>%
+    dplyr::mutate(
+      history = "Total",
+      N = as.factor(N)) %>%
+    dplyr::select(history, N)
 
   # Data frame of 100% seven times
   one_hundred_percent <- data.frame(
@@ -195,23 +136,23 @@ chs_data_request <- function(data,
   )
 
   # Combine total cases for table
-  table_total_cases <- bind_rows(total_cases_by_chs,
-                                 total_case,
-                                 one_hundred_percent) %>%
-    arrange(history) %>%
-    mutate(cases = if_else(!str_detect(N, "%"), 1, 0))
+  table_total_cases <- dplyr::bind_rows(total_cases_by_chs,
+                                        total_case,
+                                        one_hundred_percent) %>%
+    dplyr::arrange(history) %>%
+    dplyr::mutate(cases = dplyr::if_else(!stringr::str_detect(N, "%"), 1, 0))
 
   # Presumptive Disposition
   pres_disp_cases <- df1 %>%
-    count(history, presumpt) %>%
-    mutate(
-      history = as_factor(history),
-      history = factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
-      presumpt = as_factor(presumpt),
-      presumpt = factor(presumpt, levels = c("Stay", "Commit"))
+    dplyr::count(history, presumpt) %>%
+    dplyr:: mutate(
+      history = as.factor(history),
+      history = forcats::factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
+      presumpt = as.factor(presumpt),
+      presumpt = forcats::factor(presumpt, levels = c("Stay", "Commit"))
     ) %>%
-    complete(history, presumpt, fill = list(n = 0)) %>%
-    pivot_wider(names_from = presumpt, values_from = n, values_fill = 0)
+    tidyr::complete(history, presumpt, fill = list(n = 0)) %>%
+    tidyr::pivot_wider(names_from = presumpt, values_from = n, values_fill = 0)
 
   total_pres_disp_cases <- data.frame(
     history = c("Total", "Total"),
@@ -226,40 +167,40 @@ chs_data_request <- function(data,
   )
 
   pres_disp_percentages <- pres_disp_cases %>%
-    mutate(
-      Stay = if_else(is.na(Stay), 0, Stay),
-      Commit = if_else(is.na(Commit), 0, Commit),
+    dplyr::mutate(
+      Stay = dplyr::if_else(is.na(Stay), 0, Stay),
+      Commit = dplyr::if_else(is.na(Commit), 0, Commit),
       total = Stay + Commit,
-      stay_percent = if_else(total == 0, "0.0%", paste0(format(round(Stay / total * 100, 1), nsmall = 1), "%")),
-      commit_percent = if_else(total == 0, "0.0%", paste0(format(round(Commit / total * 100, 1), nsmall = 1), "%"))
+      stay_percent = dplyr::if_else(total == 0, "0.0%", paste0(format(round(Stay / total * 100, 1), nsmall = 1), "%")),
+      commit_percent = dplyr::if_else(total == 0, "0.0%", paste0(format(round(Commit / total * 100, 1), nsmall = 1), "%"))
     ) %>%
-    select(history, "Stay" = stay_percent, "Commit" = commit_percent) %>%
-    mutate(across(everything(), ~ gsub("NaN%", "0.0%", .)))
+    dplyr::select(history, "Stay" = stay_percent, "Commit" = commit_percent) %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ gsub("NaN%", "0.0%", .)))
 
   pres_disp_cases <- pres_disp_cases %>%
-    mutate(Stay = as_factor(Stay), Commit = as_factor(Commit))
+    dplyr::mutate(Stay = as.factor(Stay), Commit = as.factor(Commit))
 
-  table_pres_disp <- bind_rows(pres_disp_cases,
-                               total_pres_disp_cases,
-                               pres_disp_percentages) %>%
-    arrange(history) %>%
-    mutate(cases = if_else(!str_detect(Stay, "%") & !str_detect(Commit, "%"), 1, 0))
+  table_pres_disp <- dplyr::bind_rows(pres_disp_cases,
+                                      total_pres_disp_cases,
+                                      pres_disp_percentages) %>%
+    dplyr::arrange(history) %>%
+    dplyr::mutate(cases = dplyr::if_else(!stringr::str_detect(Stay, "%") & !stringr::str_detect(Commit, "%"), 1, 0))
 
   # Dispositional Departures
   dis_dep_cases <- df1 %>%
-    filter(dispdep %in% c(0, 1, 2)) %>%
-    mutate(
-      history = as_factor(history),
-      history = factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
-      dispdep = as_factor(dispdep),
-      dispdep = factor(dispdep, levels = c("None", "Aggravated", "Mitigated"))
+    dplyr::filter(dispdep %in% c(0, 1, 2)) %>%
+    dplyr::mutate(
+      history = as.factor(history),
+      history = forcats::factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
+      dispdep = as.factor(dispdep),
+      dispdep = forcats::factor(dispdep, levels = c("None", "Aggravated", "Mitigated"))
     ) %>%
-    count(history, dispdep) %>%
-    complete(history, dispdep, fill = list(n = 0)) %>%
-    pivot_wider(names_from = dispdep, values_from = n, values_fill = 0)
+    dplyr::count(history, dispdep) %>%
+    tidyr::complete(history, dispdep, fill = list(n = 0)) %>%
+    tidyr::pivot_wider(names_from = dispdep, values_from = n, values_fill = 0)
 
   pres_disp_cases <- pres_disp_cases %>%
-    mutate(across(c(Stay, Commit), ~ as.numeric(as.character(.))))
+    dplyr::mutate(dplyr::across(c(Stay, Commit), ~ as.numeric(as.character(.))))
 
   total_disp_dep_cases <- data.frame(
     history = c("Total", "Total"),
@@ -280,46 +221,46 @@ chs_data_request <- function(data,
   )
 
   dis_dep_percentages <- dis_dep_cases %>%
-    mutate(none_percent = paste0(format(round(None / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%"),
-           aggravated_percent = paste0(format(round(Aggravated / pres_disp_cases$Stay * 100, 1), nsmall = 1), "%"),
-           mitigated_percent = paste0(format(round(Mitigated / pres_disp_cases$Commit * 100, 1), nsmall = 1), "%")) %>%
-    select(history,
-           "None" = none_percent,
-           "Aggravated" = aggravated_percent,
-           "Mitigated" = mitigated_percent) %>%
-    mutate(across(everything(), ~ gsub("NaN%", "0.0%", .)))
+    dplyr::mutate(none_percent = paste0(format(round(None / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%"),
+                  aggravated_percent = paste0(format(round(Aggravated / pres_disp_cases$Stay * 100, 1), nsmall = 1), "%"),
+                  mitigated_percent = paste0(format(round(Mitigated / pres_disp_cases$Commit * 100, 1), nsmall = 1), "%")) %>%
+    dplyr::select(history,
+                  "None" = none_percent,
+                  "Aggravated" = aggravated_percent,
+                  "Mitigated" = mitigated_percent) %>%
+    dplyr::mutate(dplyr::across(everything(), ~ gsub("NaN%", "0.0%", .)))
 
   dis_dep_cases <- dis_dep_cases %>%
-    mutate(None = as_factor(None),
-           Aggravated = as_factor(Aggravated),
-           Mitigated = as_factor(Mitigated))
+    dplyr::mutate(None = as.factor(None),
+                  Aggravated = as.factor(Aggravated),
+                  Mitigated = as.factor(Mitigated))
 
-  table_disp_dep <- bind_rows(dis_dep_cases,
-                              total_disp_dep_cases,
-                              dis_dep_percentages) %>%
-    mutate(across(everything(), ~ gsub("NaN%", "0.0%", .))) %>%
-    arrange(history) %>%
-    mutate(cases = if_else(!str_detect(None, "%") &
-                             !str_detect(Aggravated, "%") &
-                             !str_detect(Mitigated, "%"),
+  table_disp_dep <- dplyr::bind_rows(dis_dep_cases,
+                                      total_disp_dep_cases,
+                                      dis_dep_percentages) %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ gsub("NaN%", "0.0%", .))) %>%
+    dplyr::arrange(history) %>%
+    dplyr::mutate(cases = dplyr::if_else(!stringr::str_detect(None, "%") &
+                                         !stringr::str_detect(Aggravated, "%") &
+                                         !stringr::str_detect(Mitigated, "%"),
                            1, 0)) %>%
-    rename(none_disp = None, agg_disp = Aggravated, mit_disp = Mitigated)
+    dplyr::rename(none_disp = None, agg_disp = Aggravated, mit_disp = Mitigated)
 
   # Durational Departures
   dur_dep_cases <- df1 %>%
-    filter(prison == 100, durdep %in% c(0, 1, 2)) %>%
-    mutate(
-      durdep = recode(as.numeric(durdep), `0` = "None", `1` = "Aggravated", `2` = "Mitigated"),
-      durdep = factor(durdep, levels = c("None", "Aggravated", "Mitigated")),
-      history = as_factor(history),
-      history = factor(history, levels = c("0", "1", "2", "3", "4", "5", "6"))
+    dplyr::filter(prison == 100, durdep %in% c(0, 1, 2)) %>%
+    dplyr::mutate(
+      durdep = dplyr::recode(as.numeric(durdep), `0` = "None", `1` = "Aggravated", `2` = "Mitigated"),
+      durdep = forcats::factor(durdep, levels = c("None", "Aggravated", "Mitigated")),
+      history = as.factor(history),
+      history = forcats::factor(history, levels = c("0", "1", "2", "3", "4", "5", "6"))
     ) %>%
-    count(history, durdep) %>%
-    complete(history, durdep, fill = list(n = 0)) %>%
-    pivot_wider(names_from = durdep, values_from = n, values_fill = 0)
+    dplyr::count(history, durdep) %>%
+    tidyr::complete(history, durdep, fill = list(n = 0)) %>%
+    tidyr::pivot_wider(names_from = durdep, values_from = n, values_fill = 0)
 
   dur_dep_cases <- dur_dep_cases %>%
-    mutate(across(c(None, Aggravated, Mitigated), ~ as.numeric(as.character(.))))
+    dplyr::mutate(dplyr::across(c(None, Aggravated, Mitigated), ~ as.numeric(as.character(.))))
 
   total_dur_dep_cases <- data.frame(
     history = c("Total", "Total"),
@@ -342,51 +283,51 @@ chs_data_request <- function(data,
                                                         sum(dur_dep_cases$Mitigated)) * 100, 1),
                                              nsmall = 1), "%")))
   ) %>%
-    mutate(across(everything(), ~ gsub("NaN%", "0.0%", .)))
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ gsub("NaN%", "0.0%", .)))
 
   dur_dep_percentages <- dur_dep_cases %>%
-    mutate(none_percent = paste0(format(round(None / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%"),
-           aggravated_percent = paste0(format(round(Aggravated / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%"),
-           mitigated_percent = paste0(format(round(Mitigated / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%")) %>%
-    select(history,
-           "None" = none_percent,
-           "Aggravated" = aggravated_percent,
-           "Mitigated" = mitigated_percent) %>%
-    mutate(across(everything(), ~ gsub("NaN%", "0.0%", .)))
+    dplyr::mutate(none_percent = paste0(format(round(None / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%"),
+                  aggravated_percent = paste0(format(round(Aggravated / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%"),
+                  mitigated_percent = paste0(format(round(Mitigated / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%")) %>%
+    dplyr::select(history,
+                  "None" = none_percent,
+                  "Aggravated" = aggravated_percent,
+                  "Mitigated" = mitigated_percent) %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ gsub("NaN%", "0.0%", .)))
 
   dur_dep_cases <- dur_dep_cases %>%
-    mutate(None = as_factor(None),
-           Aggravated = as_factor(Aggravated),
-           Mitigated = as_factor(Mitigated))
+    dplyr::mutate(None = as.factor(None),
+                  Aggravated = as.factor(Aggravated),
+                  Mitigated = as.factor(Mitigated))
 
-  table_dur_dep <- bind_rows(dur_dep_cases,
-                             total_dur_dep_cases,
-                             dur_dep_percentages) %>%
-    arrange(history) %>%
-    mutate(cases = if_else(!str_detect(None, "%") &
-                             !str_detect(Aggravated, "%") &
-                             !str_detect(Mitigated, "%"),
+  table_dur_dep <- dplyr::bind_rows(dur_dep_cases,
+                                    total_dur_dep_cases,
+                                    dur_dep_percentages) %>%
+    dplyr::arrange(history) %>%
+    dplyr::mutate(cases = dplyr::if_else(!stringr::str_detect(None, "%") &
+                                         !stringr::str_detect(Aggravated, "%") &
+                                         !stringr::str_detect(Mitigated, "%"),
                            1, 0)) %>%
-    rename(none_dur = None,
+    dplyr::rename(none_dur = None,
            agg_dur = Aggravated,
            mit_dur = Mitigated) %>%
-    mutate(across(ends_with("_percent"), ~ replace(., is.na(.), "0.0%")))
+    dplyr::mutate(dplyr::across(dplyr::ends_with("_percent"), ~ replace(., is.na(.), "0.0%")))
 
   # Combine all into one final table
   final_chs_table <- table_total_cases %>%
-    left_join(table_pres_disp, by = c("history", "cases")) %>%
-    left_join(table_disp_dep, by = c("history", "cases")) %>%
-    left_join(table_dur_dep, by = c("history", "cases")) %>%
-    select(history,
-           N,
-           Stay,
-           Commit,
-           none_disp,
-           agg_disp,
-           mit_disp,
-           none_dur,
-           agg_dur,
-           mit_dur)
+    dplyr::left_join(table_pres_disp, by = c("history", "cases")) %>%
+    dplyr::left_join(table_disp_dep, by = c("history", "cases")) %>%
+    dplyr::left_join(table_dur_dep, by = c("history", "cases")) %>%
+    dplyr::select(history,
+                  N,
+                  Stay,
+                  Commit,
+                  none_disp,
+                  agg_disp,
+                  mit_disp,
+                  none_dur,
+                  agg_dur,
+                  mit_dur)
 
   ################################################################
   # Departure and plea reasons template
@@ -400,69 +341,69 @@ chs_data_request <- function(data,
 
   # Number of mitigated dispositional departure cases
   mdd_cases <- df1 %>%
-    filter(dispdep == 2,
+    dplyr::filter(dispdep == 2,
     ) %>%
-    summarize(N = n())
+    dplyr::summarize(N = n())
 
   # Determine data filters and convert dep reason1-4 to long format
   mit_disp_dep_reasons_long <- df1 %>%
-    filter(dispdep == 2
+    dplyr::filter(dispdep == 2
     ) %>%
-    select(reason1,
+    dplyr::select(reason1,
            reason2,
            reason3,
            reason4) %>%
-    mutate(
-      reason1 = as_factor(reason1),
-      reason2 = as_factor(reason2),
-      reason3 = as_factor(reason3),
-      reason4 = as_factor(reason4)) %>%
-    pivot_longer(
+    dplyr::mutate(
+      reason1 = as.factor(reason1),
+      reason2 = as.factor(reason2),
+      reason3 = as.factor(reason3),
+      reason4 = as.factor(reason4)) %>%
+    tidyr::pivot_longer(
       cols = starts_with("reason"),
       names_to = "reason_number",
       values_to = "reason"
     ) %>%
-    filter(!is.na(reason),
+    dplyr::filter(!is.na(reason),
            !(reason_number == "reason2" & reason == 0),
            !(reason_number == "reason3" & reason == 0),
            !(reason_number == "reason4" & reason == 0))
 
   # Determine the number of each reason and percent composition
   mdd_reasons <- mit_disp_dep_reasons_long %>%
-    group_by(reason) %>%
-    summarize(N = n()) %>%
-    mutate(percent = as_factor(paste0(format(round(N / mdd_cases$N * 100, 1), nsmall = 1), "%")),
-           across(c(percent), ~ trimws(.))) %>%
-    arrange(desc(N))
+    dplyr::group_by(reason) %>%
+    dplyr::summarize(N = n()) %>%
+    dplyr::mutate(percent = as.factor(paste0(format(round(N / mdd_cases$N * 100, 1), nsmall = 1), "%")),
+           dplyr::across(c(percent), ~ trimws(.))) %>%
+    dplyr::arrange(desc(N))
 
   ################################################################
   # Departure plea reasons
 
   mit_disp_plea_df <- df1 %>%
-    filter(dispdep == 2) %>%
-    mutate(unknown = if_else(preason1 == 0 | preason2 == 0 | preason3 == 0,
+    dplyr::filter(dispdep == 2) %>%
+    dplyr::mutate(unknown = dplyr::if_else(preason1 == 0 | preason2 == 0 | preason3 == 0,
                              1, 0),
-           accepts = if_else(preason1 == 440 | preason2 == 440 | preason3 == 440,
+           accepts = dplyr::if_else(preason1 == 440 | preason2 == 440 | preason3 == 440,
                              1, 0),
-           pros_objects = if_else(preason1 == 441 | preason2 == 441 | preason3 == 441,
+           pros_objects = dplyr::if_else(preason1 == 441 | preason2 == 441 | preason3 == 441,
                                   1, 0),
-           pros_not_object = if_else(preason1 == 442 | preason2 == 442 | preason3 == 442,
+           pros_not_object = dplyr::if_else(preason1 == 442 | preason2 == 442 | preason3 == 442,
                                      1, 0),
-           plea_deal = if_else(preason1 == 470 | preason2 == 470 | preason3 == 470,
+           plea_deal = dplyr::if_else(preason1 == 470 | preason2 == 470 | preason3 == 470,
                                1, 0),
-           pros_motion = if_else(preason1 == 599 | preason2 == 599 | preason3 == 599,
+           pros_motion = dplyr::if_else(preason1 == 599 | preason2 == 599 | preason3 == 599,
                                  1, 0),
-           pr_accepts = if_else(accepts == 1 | pros_not_object == 1 | plea_deal == 1 |
+           pr_accepts = dplyr::if_else(accepts == 1 | pros_not_object == 1 | plea_deal == 1 |
                                   pros_motion == 1, 1, 0),
-           pr_objects = if_else(pros_objects == 1, 1, 0),
-           pr_unknown = if_else(unknown == 1 & accepts == 0 & pros_objects == 0 &
+           pr_objects = dplyr::if_else(pros_objects == 1, 1, 0),
+           pr_unknown = dplyr::if_else(unknown == 1 & accepts == 0 & pros_objects == 0 &
                                   pros_not_object == 0 & plea_deal == 0 & pros_motion == 0, 1, 0),
-           plea_reasons_grp = case_when(
+           plea_reasons_grp = dplyr::case_when(
              pr_accepts == 1 ~ "Prosecutor did not Object/Plea Negotiation",
              pr_objects == 1 ~ "Prosecutor Objects",
              pr_unknown == 1 ~ "Plea Reason Unknown",
              TRUE ~ "-99999999999999999999"),
-           plea_reasons_grp = factor(
+           plea_reasons_grp = forcats::factor(
              plea_reasons_grp,
              levels = c(
                "Prosecutor did not Object/Plea Negotiation",
@@ -473,12 +414,12 @@ chs_data_request <- function(data,
                "-99999999999999999999")
            )
     ) %>%
-    group_by(plea_reasons_grp) %>%
-    summarize(N = n()) %>%
-    ungroup() %>%
-    mutate(percent = as_factor(paste0(format(round(N / mdd_cases$N * 100, 1), nsmall = 1), "%")),
-           across(c(percent), ~ trimws(.))) %>%
-    arrange(plea_reasons_grp)
+    dplyr::group_by(plea_reasons_grp) %>%
+    dplyr::summarize(N = n()) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(percent = as.factor(paste0(format(round(N / mdd_cases$N * 100, 1), nsmall = 1), "%")),
+           dplyr::across(c(percent), ~ trimws(.))) %>%
+    dplyr::arrange(plea_reasons_grp)
 
   ################################################################
   # Durational departure reasons
@@ -490,77 +431,77 @@ chs_data_request <- function(data,
 
   # Number of mitigated durational departure cases
   mitigated_dur_dep_cases <- df1 %>%
-    filter(durdep == 2,
+    dplyr::filter(durdep == 2,
            prison == 100
     ) %>%
-    summarize(N = n())
+    dplyr::summarize(N = n())
 
   # Determine data filters and convert dep reason1-4 to long format
   dur_dep_reasons_long <- df1 %>%
-    filter(durdep == 2,
+    dplyr::filter(durdep == 2,
            prison == 100
     ) %>%
-    select(reason1,
+    dplyr::select(reason1,
            reason2,
            reason3,
            reason4) %>%
-    mutate(
-      reason1 = as_factor(reason1),
-      reason2 = as_factor(reason2),
-      reason3 = as_factor(reason3),
-      reason4 = as_factor(reason4)) %>%
-    pivot_longer(
+    dplyr::mutate(
+      reason1 = as.factor(reason1),
+      reason2 = as.factor(reason2),
+      reason3 = as.factor(reason3),
+      reason4 = as.factor(reason4)) %>%
+    tidyr::pivot_longer(
       cols = starts_with("reason"),
       names_to = "reason_number",
       values_to = "reason"
     ) %>%
-    filter(!is.na(reason))
+    dplyr::filter(!is.na(reason))
 
   # Determine the number of each reason and percent composition
   mit_dur_dep_reasons <- dur_dep_reasons_long %>%
-    filter(reason != 0) %>%
-    group_by(reason) %>%
-    summarize(N = n()) %>%
-    mutate(percent = as_factor(paste0(format(round(N / sum(mitigated_dur_dep_cases$N) * 100, 1), nsmall = 1), "%")),
-           across(c(percent), ~ trimws(.))) %>%
-    arrange(desc(N))
+    dplyr::filter(reason != 0) %>%
+    dplyr::group_by(reason) %>%
+    dplyr::summarize(N = n()) %>%
+    dplyr::mutate(percent = as.factor(paste0(format(round(N / sum(mitigated_dur_dep_cases$N) * 100, 1), nsmall = 1), "%")),
+           dplyr::across(c(percent), ~ trimws(.))) %>%
+    dplyr::arrange(desc(N))
 
   ################################################################
   # Departure plea reasons
 
   mit_dur_plea_df <- df1 %>%
-    filter(durdep == 2,
+    dplyr::filter(durdep == 2,
            prison == 100) %>%
-    mutate(unknown = if_else(preason1 == 0 | preason2 == 0 | preason3 == 0,
+    dplyr::mutate(unknown = dplyr::if_else(preason1 == 0 | preason2 == 0 | preason3 == 0,
                              1, 0),
-           accepts = if_else(preason1 == 440 | preason2 == 440 | preason3 == 440,
+           accepts = dplyr::if_else(preason1 == 440 | preason2 == 440 | preason3 == 440,
                              1, 0),
-           pros_objects = if_else(preason1 == 441 | preason2 == 441 | preason3 == 441,
+           pros_objects = dplyr::if_else(preason1 == 441 | preason2 == 441 | preason3 == 441,
                                   1, 0),
-           pros_not_object = if_else(preason1 == 442 | preason2 == 442 | preason3 == 442,
+           pros_not_object = dplyr::if_else(preason1 == 442 | preason2 == 442 | preason3 == 442,
                                      1, 0),
-           plea_deal = if_else(preason1 == 470 | preason2 == 470 | preason3 == 470,
+           plea_deal = dplyr::if_else(preason1 == 470 | preason2 == 470 | preason3 == 470,
                                1, 0),
-           pros_motion = if_else(preason1 == 599 | preason2 == 599 | preason3 == 599,
+           pros_motion = dplyr::if_else(preason1 == 599 | preason2 == 599 | preason3 == 599,
                                  1, 0),
-           pr_accepts = if_else(accepts == 1 | pros_not_object == 1 | plea_deal == 1 |
+           pr_accepts = dplyr::if_else(accepts == 1 | pros_not_object == 1 | plea_deal == 1 |
                                   pros_motion == 1, 1, 0),
-           pr_objects = if_else(pros_objects == 1, 1, 0),
-           pr_unknown = if_else(unknown == 1 & accepts == 0 & pros_objects == 0 &
+           pr_objects = dplyr::if_else(pros_objects == 1, 1, 0),
+           pr_unknown = dplyr::if_else(unknown == 1 & accepts == 0 & pros_objects == 0 &
                                   pros_not_object == 0 & plea_deal == 0 & pros_motion == 0, 1, 0),
-           pr_other = if_else(unknown != 1 &
+           pr_other = dplyr::if_else(unknown != 1 &
                                 accepts != 1 &
                                 pros_objects != 1 &
                                 pros_not_object != 1 &
                                 plea_deal != 1 &
                                 pros_motion != 1, 1, 0),
-           plea_reasons_grp = case_when(
+           plea_reasons_grp = dplyr::case_when(
              pr_accepts == 1 ~ "Prosecutor did not Object/Plea Negotiation",
              pr_objects == 1 ~ "Prosecutor Objects",
              pr_unknown == 1 ~ "Plea Reason Unknown",
              pr_other == 1 ~ "Other Reason",
              TRUE ~ "-99999999999999999999"),
-           plea_reasons_grp = factor(
+           plea_reasons_grp = forcats::factor(
              plea_reasons_grp,
              levels = c(
                "Prosecutor did not Object/Plea Negotiation",
@@ -570,12 +511,12 @@ chs_data_request <- function(data,
                "-99999999999999999999")
            )
     ) %>%
-    group_by(plea_reasons_grp) %>%
-    summarize(N = n()) %>%
-    ungroup() %>%
-    mutate(percent = as_factor(paste0(format(round(N / mitigated_dur_dep_cases$N * 100, 1), nsmall = 1), "%")),
-           across(c(percent), ~ trimws(.))) %>%
-    arrange(plea_reasons_grp)
+    dplyr::group_by(plea_reasons_grp) %>%
+    dplyr::summarize(N = n()) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(percent = as.factor(paste0(format(round(N / mitigated_dur_dep_cases$N * 100, 1), nsmall = 1), "%")),
+           dplyr::across(c(percent), ~ trimws(.))) %>%
+    dplyr::arrange(plea_reasons_grp)
 
   ###########################################################################
   # Return final result in Excel file
@@ -590,7 +531,7 @@ chs_data_request <- function(data,
 
   excel_file <- file.path(output_path, output_name)
 
-  write_xlsx(excel_list, path = excel_file, col_names = TRUE)
+  writexl::write_xlsx(excel_list, path = excel_file, col_names = TRUE)
 
   file.show(path = excel_file)
 }
