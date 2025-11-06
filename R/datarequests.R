@@ -17,7 +17,7 @@
 #' @import tibble
 #' @export
 
-chs_request <- function(data,
+chs_data_request <- function(data,
                              case_list_path,
                              case_list_name,
                              output_path,
