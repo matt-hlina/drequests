@@ -73,6 +73,5 @@ utils::globalVariables(c(
   "time",
   "total",
   "typecust",
-  "unknown",
-  "%>%"
+  "unknown"
 ))
