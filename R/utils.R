@@ -58,6 +58,6 @@ requested_cases <- function(data, filters) {
 }
 
 
-
+#' @importFrom magrittr %>%
 
 
