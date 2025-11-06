@@ -16,9 +16,10 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr,
-    forcats,
     magrittr,
     stringr,
     tidyr,
     writexl
+Suggests:
+    tibble
 RoxygenNote: 7.3.3
