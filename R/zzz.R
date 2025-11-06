@@ -2,6 +2,7 @@ utils::globalVariables(c(
   "Agecat",
   "Aggravated",
   "Commit",
+  "df1",
   "Maxtime",
   "Mintime",
   "Mitigated",
@@ -72,5 +73,6 @@ utils::globalVariables(c(
   "time",
   "total",
   "typecust",
-  "unknown"
+  "unknown",
+  "%"
 ))
