@@ -55,6 +55,8 @@ requested_cases <- function(data, filters) {
       df1 <- df1 %>% dplyr::filter(.data[[name]] == value)
     }
   }
+
+  return(df1)
 }
 
 
