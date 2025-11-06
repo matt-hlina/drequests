@@ -12,6 +12,9 @@
 #' selecting a range of data, (i.e., sentyear) and reason and preason are used for
 #' selecting departure reasons and plea reasons.
 #'
+#' @import dplyr
+#' @import forcats
+#' @import tibble
 #' @export
 
 chs_request <- function(data,
@@ -22,7 +25,7 @@ chs_request <- function(data,
                              ...) {
 
   filters <- list(...)
-  df1 <- requested_cases(data, filters)
+  df1 <- requested_cases(data, filters) # some comment here (filtering)
 
   ###########################################################################
   # Everything below is pipeline
@@ -116,7 +119,7 @@ chs_request <- function(data,
     dplyr::mutate(history = as.character(history)) %>%
     tidyr::complete(history = as.character(0:6), fill = list(N = 0)) %>%
     dplyr::mutate(
-      history = forcats::factor(history, levels = as.character(0:6)),
+      history = factor(history, levels = as.character(0:6)),
       N = as.factor(N)
     ) %>%
     dplyr::arrange(history)
@@ -147,9 +150,9 @@ chs_request <- function(data,
     dplyr::count(history, presumpt) %>%
     dplyr:: mutate(
       history = as.factor(history),
-      history = forcats::factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
+      history = factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
       presumpt = as.factor(presumpt),
-      presumpt = forcats::factor(presumpt, levels = c("Stay", "Commit"))
+      presumpt = factor(presumpt, levels = c("Stay", "Commit"))
     ) %>%
     tidyr::complete(history, presumpt, fill = list(n = 0)) %>%
     tidyr::pivot_wider(names_from = presumpt, values_from = n, values_fill = 0)
@@ -191,9 +194,9 @@ chs_request <- function(data,
     dplyr::filter(dispdep %in% c(0, 1, 2)) %>%
     dplyr::mutate(
       history = as.factor(history),
-      history = forcats::factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
+      history = factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
       dispdep = as.factor(dispdep),
-      dispdep = forcats::factor(dispdep, levels = c("None", "Aggravated", "Mitigated"))
+      dispdep = factor(dispdep, levels = c("None", "Aggravated", "Mitigated"))
     ) %>%
     dplyr::count(history, dispdep) %>%
     tidyr::complete(history, dispdep, fill = list(n = 0)) %>%
@@ -251,9 +254,9 @@ chs_request <- function(data,
     dplyr::filter(prison == 100, durdep %in% c(0, 1, 2)) %>%
     dplyr::mutate(
       durdep = dplyr::recode(as.numeric(durdep), `0` = "None", `1` = "Aggravated", `2` = "Mitigated"),
-      durdep = forcats::factor(durdep, levels = c("None", "Aggravated", "Mitigated")),
+      durdep = factor(durdep, levels = c("None", "Aggravated", "Mitigated")),
       history = as.factor(history),
-      history = forcats::factor(history, levels = c("0", "1", "2", "3", "4", "5", "6"))
+      history = factor(history, levels = c("0", "1", "2", "3", "4", "5", "6"))
     ) %>%
     dplyr::count(history, durdep) %>%
     tidyr::complete(history, durdep, fill = list(n = 0)) %>%
@@ -403,7 +406,7 @@ chs_request <- function(data,
              pr_objects == 1 ~ "Prosecutor Objects",
              pr_unknown == 1 ~ "Plea Reason Unknown",
              TRUE ~ "-99999999999999999999"),
-           plea_reasons_grp = forcats::factor(
+           plea_reasons_grp = factor(
              plea_reasons_grp,
              levels = c(
                "Prosecutor did not Object/Plea Negotiation",
@@ -501,7 +504,7 @@ chs_request <- function(data,
              pr_unknown == 1 ~ "Plea Reason Unknown",
              pr_other == 1 ~ "Other Reason",
              TRUE ~ "-99999999999999999999"),
-           plea_reasons_grp = forcats::factor(
+           plea_reasons_grp = factor(
              plea_reasons_grp,
              levels = c(
                "Prosecutor did not Object/Plea Negotiation",
