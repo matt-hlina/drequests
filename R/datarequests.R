@@ -25,7 +25,7 @@ chs_data_request <- function(data,
                              ...) {
 
   filters <- list(...)
-  df1 <- requested_cases(data, filters) # some comment here (filtering)
+  df1 <- requested_cases(data, filters) # function found in utils.R, filter_function
 
   ###########################################################################
   # Everything below is pipeline
