@@ -33,7 +33,15 @@ chs_data_request <- function(data,
 
   # Create case list #
   data_set <- df1 %>%
-    dplyr::mutate(
+    dplyr::mutate(dplyr::across(
+      c(
+        county, Agecat, sex, race, severity, typecust, presumpt, plea,
+        inctype, stayexec, impose, condconf, consec, dispdep, durdep,
+        cnsdep, reason1, reason2, reason3, reason4,
+        preason1, preason2, preason3, Offense
+      ),
+      as.factor
+    )
       severity = dplyr::case_when(
         severity == "51" ~ "D1",
         severity == "52" ~ "D2",
@@ -44,17 +52,7 @@ chs_data_request <- function(data,
         severity == "57" ~ "D7",
         severity == "58" ~ "D8",
         severity == "59" ~ "D9",
-        TRUE ~ severity
-      ),
-      dplyr::across(
-        c(
-          county, Agecat, sex, race, severity, typecust, presumpt, plea,
-          inctype, stayexec, impose, condconf, consec, dispdep, durdep,
-          cnsdep, reason1, reason2, reason3, reason4,
-          preason1, preason2, preason3, Offense
-        ),
-        as.factor
-      )
+        TRUE ~ severity),
     ) %>%
     dplyr::arrange(district, county, jlname, sentyear) %>%
     dplyr::select(
