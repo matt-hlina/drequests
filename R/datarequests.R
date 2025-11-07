@@ -5,10 +5,10 @@
 #' CHS data request function
 #'
 #' @param data 'data.frame' of Sentencing Guidelines public data set.
-#' @param case_list_path pathway where the case list will be saved.
 #' @param case_list_name name of the case list file.
-#' @param output_path pathway where the report output will be saved.
+#' @param case_list_path pathway where the case list will be saved.
 #' @param output_name name of the report output file.
+#' @param output_path pathway where the report output will be saved.
 #' @param ... represents any variable within the data set. When a variable is used
 #' as an argument, the definition of the argument will be used to filter the data.
 #' Four arguments that are derivatives of variables exist: variablename_min,
