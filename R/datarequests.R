@@ -2,6 +2,8 @@
 # Data request function for when sentencing info is asked to be grouped by CHS
 ############################################################################
 
+#' CHS data request function
+#'
 #' @param data 'data.frame' of Sentencing Guidelines public data set.
 #' @param case_list_path pathway where the case list will be saved.
 #' @param case_list_name name of the case list file.
@@ -18,6 +20,8 @@
 #' @import forcats
 #' @import tibble
 #' @export
+#'
+#' @name chs_data_request_function
 
 chs_data_request <- function(data,
                              case_list_name,
