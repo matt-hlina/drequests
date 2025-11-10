@@ -3,6 +3,7 @@ utils::globalVariables(c(
   "Aggravated",
   "Commit",
   "df1",
+  "data_frame",
   "data_set",
   "Maxtime",
   "Mintime",
