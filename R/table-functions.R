@@ -4,7 +4,7 @@
 
 #' Table functions
 #'
-#' @param df1 a filtered 'data.frame' of the cases requested in the data request.
+#' @param data_frame a filtered 'data.frame' of the cases requested in the data request.
 #'
 #' @return a 'data.frame' of the total cases for the data set grouped by Criminal
 #' History Score.
@@ -13,9 +13,9 @@
 #'
 #'
 
-total_cases_by_chs <- function(df1) {
+total_cases_by_chs <- function(data_frame) {
 
-  total_cases <- df1 %>%
+  total_cases <- data_frame %>%
     dplyr::group_by(history) %>%
     dplyr::summarize(N = n(), .groups = "drop") %>%
     dplyr::mutate(history = as.character(history)) %>%
@@ -27,7 +27,7 @@ total_cases_by_chs <- function(df1) {
     dplyr::arrange(history)
 
   # Total cases
-  total_case <- df1 %>%
+  total_case <- data_frame %>%
     dplyr::summarize(N = n()) %>%
     dplyr::mutate(
       history = "Total",
@@ -50,7 +50,7 @@ total_cases_by_chs <- function(df1) {
   return(table_total_cases)
 }
 
-#' @param df1 a filtered 'data.frame' of the cases requested in the data request.
+#' @param data_frame a filtered 'data.frame' of the cases requested in the data request.
 #'
 #' @return a 'data.frame' of the total cases for the data set grouped by Criminal
 #' History Score and presumptive disposition.
@@ -58,9 +58,9 @@ total_cases_by_chs <- function(df1) {
 #' @keywords internal
 #' @name table_functions
 
-pres_disp_cases <- function(data, df1) {
+pres_disp_cases <- function(data_frame) {
 
-  pres_disp <- df1 %>%
+  pres_disp <- data_frame %>%
     dplyr::count(history, presumpt) %>%
     dplyr::mutate(
       history = factor(history, levels = as.character(0:6)),
@@ -109,7 +109,7 @@ pres_disp_cases <- function(data, df1) {
 }
 
 
-#' @param df1 a filtered 'data.frame' of the cases requested in the data request.
+#' @param data_frame a filtered 'data.frame' of the cases requested in the data request.
 #' @param pres_disp 'data.frame' of the total cases separated by presumptive disposition.
 #'
 #' @return a 'data.frame' of the total cases for the data set grouped by Criminal
@@ -120,9 +120,9 @@ pres_disp_cases <- function(data, df1) {
 #' @keywords internal
 #' @name table_functions
 
-  disp_dep_cases <- function(df1, pres_disp) {
+  disp_dep_cases <- function(data_frame, pres_disp) {
 
-    disp_dep <- df1 %>%
+    disp_dep <- data_frame %>%
       dplyr::filter(dispdep %in% c(0, 1, 2)) %>%
       dplyr::mutate(
         history = as.factor(history),
@@ -185,7 +185,7 @@ pres_disp_cases <- function(data, df1) {
 
     }
 
-  #' @param df1 a filtered 'data.frame' of the cases requested in the data request.
+  #' @param data_frame a filtered 'data.frame' of the cases requested in the data request.
   #'
   #' @return a 'data.frame' of the total cases for the data set grouped by Criminal
   #' History Score and durational departures. Percentages are calculated using
@@ -194,8 +194,8 @@ pres_disp_cases <- function(data, df1) {
   #' @keywords internal
   #' @name table_functions
 
-  dur_dep_cases <- function(df1) {
-    dur_dep <- df1 %>%
+  dur_dep_cases <- function(data_frame) {
+    dur_dep <- data_frame %>%
       dplyr::filter(prison == 100, durdep %in% c(0, 1, 2)) %>%
       dplyr::mutate(
         durdep = dplyr::recode(as.numeric(durdep), `0` = "None", `1` = "Aggravated", `2` = "Mitigated"),
