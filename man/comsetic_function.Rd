@@ -5,11 +5,9 @@
 \alias{case_list}
 \title{Cosmetic function}
 \usage{
-case_list(data, df1)
+case_list(df1)
 }
 \arguments{
-\item{data}{'data.frame' of Sentencing Guidelines public data set.}
-
 \item{df1}{a filtered 'data.frame' of the cases requested in the data request.}
 }
 \value{
