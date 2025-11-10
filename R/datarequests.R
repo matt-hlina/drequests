@@ -42,7 +42,7 @@ chs_data_request <- function(data,
   df1 <- requested_cases(data, filters) # function found in filter-function.R
 
   # select only the necessary variables for the final case list
-  data_set <- case_list(data, df1) # function found in final-case-list-function.R
+  data_set <- case_list(df1) # function found in final-case-list-function.R
 
   # save the case list under the directed pathway with the directed name
   create_excel(data_set, case_list_name, case_list_path)
