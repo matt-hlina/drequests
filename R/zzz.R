@@ -1,9 +1,7 @@
 utils::globalVariables(c(
   "Agecat",
   "Aggravated",
-  "case_list",
   "Commit",
-  "create_excel",
   "df1",
   "data_set",
   "Maxtime",
