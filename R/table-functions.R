@@ -41,7 +41,7 @@ total_cases_by_chs <- function(df1) {
   )
 
   # Combine total cases for table
-  table_total_cases <- dplyr::bind_rows(total_cases_by_chs,
+  table_total_cases <- dplyr::bind_rows(total_cases,
                                         total_case,
                                         one_hundred_percent) %>%
     dplyr::arrange(history) %>%
