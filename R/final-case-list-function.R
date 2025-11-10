@@ -4,7 +4,6 @@
 
 #' Cosmetic function
 #'
-#' @param data 'data.frame' of Sentencing Guidelines public data set.
 #' @param df1 a filtered 'data.frame' of the cases requested in the data request.
 #'
 #' @return A filtered data frame with fewer variables.
@@ -12,7 +11,7 @@
 #' @name comsetic_function
 #'
 
-case_list <- function(data, df1) {
+case_list <- function(df1) {
   data_set <- df1 %>%
     dplyr::mutate(dplyr::across(
       c(
