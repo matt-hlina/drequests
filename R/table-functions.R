@@ -139,23 +139,23 @@ pres_disp_cases <- function(data, df1) {
 
     total_disp_dep_cases <- data.frame(
       history = c("Total", "Total"),
-      None = c(as.character(sum(dis_dep_cases$None)),
-               as.character(paste0(format(round(sum(dis_dep_cases$None) /
-                                                  (sum(dis_dep_cases$None) +
-                                                     sum(dis_dep_cases$Aggravated) +
-                                                     sum(dis_dep_cases$Mitigated)) * 100, 1),
+      None = c(as.character(sum(disp_dep$None)),
+               as.character(paste0(format(round(sum(disp_dep$None) /
+                                                  (sum(disp_dep$None) +
+                                                     sum(disp_dep$Aggravated) +
+                                                     sum(disp_dep$Mitigated)) * 100, 1),
                                           nsmall = 1), "%"))),
-      Aggravated = c(as.character(sum(dis_dep_cases$Aggravated)),
-                     as.character(paste0(format(round(sum(dis_dep_cases$Aggravated) /
+      Aggravated = c(as.character(sum(disp_dep$Aggravated)),
+                     as.character(paste0(format(round(sum(disp_dep$Aggravated) /
                                                         sum(pres_disp$Stay) * 100, 1),
                                                 nsmall = 1), "%"))),
-      Mitigated = c(as.character(sum(dis_dep_cases$Mitigated)),
-                    as.character(paste0(format(round(sum(dis_dep_cases$Mitigated) /
+      Mitigated = c(as.character(sum(disp_dep$Mitigated)),
+                    as.character(paste0(format(round(sum(disp_dep$Mitigated) /
                                                        sum(pres_disp$Commit) * 100, 1),
                                                nsmall = 1), "%")))
     )
 
-    dis_dep_percentages <- dis_dep_cases %>%
+    dis_dep_percentages <- disp_dep %>%
       dplyr::mutate(none_percent = paste0(format(round(None / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%"),
                     aggravated_percent = paste0(format(round(Aggravated / pres_disp$Stay * 100, 1), nsmall = 1), "%"),
                     mitigated_percent = paste0(format(round(Mitigated / pres_disp$Commit * 100, 1), nsmall = 1), "%")) %>%
