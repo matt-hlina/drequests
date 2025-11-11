@@ -9,13 +9,13 @@
 \alias{final_chs_table}
 \title{Table functions}
 \usage{
-total_cases_by_chs(df1)
+total_cases_by_chs(data_frame)
 
-pres_disp_cases(data, df1)
+pres_disp_cases(data_frame)
 
-disp_dep_cases(df1, pres_disp)
+disp_dep_cases(data_frame, pres_disp)
 
-dur_dep_cases(df1)
+dur_dep_cases(data_frame)
 
 final_chs_table(
   table_total_cases,
@@ -25,7 +25,7 @@ final_chs_table(
 )
 }
 \arguments{
-\item{df1}{a filtered 'data.frame' of the cases requested in the data request.}
+\item{data_frame}{a filtered 'data.frame' of the cases requested in the data request.}
 
 \item{pres_disp}{'data.frame' of the total cases separated by presumptive disposition.}
 
