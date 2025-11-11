@@ -50,16 +50,16 @@ chs_data_request <- function(data,
   ########################################################################
   # Create report tables #
   # Total cases by CHS
-  total_cases_by_chs <- total_cases_by_chs(df1)
+  table_total_cases <- total_cases_by_chs(df1)
 
   # Presumptive Disposition
-  pres_disp_cases <- pres_disp_cases(df1)
+  table_pres_disp <- pres_disp_cases(df1)
 
   # Dispositional Departures
-  disp_dep_cases(df1, pres_disp_cases$pres_disp)
+  table_dur_dep <- disp_dep_cases(df1, pres_disp_cases$pres_disp)
 
   # Durational Departures
-  dur_dep_cases(df1)
+  table_dur_dep <- dur_dep_cases(df1)
 
   # Combine all into one final table
   final_chs_table(table_total_cases, table_pres_disp, table_disp_dep, table_dur_dep)
