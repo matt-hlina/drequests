@@ -13,6 +13,7 @@ utils::globalVariables(c(
   "Offense",
   "Offense_Title",
   "pres_disp",
+  "pres_disp_values",
   "Stay",
   "table_disp_dep",
   "table_dur_dep",
