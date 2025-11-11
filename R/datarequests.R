@@ -53,12 +53,13 @@ chs_data_request <- function(data,
   table_total_cases <- total_cases_by_chs(df1)
 
   # Presumptive Disposition
-  table_pres_disp <- pres_disp_cases(df1)
+  out <- pres_disp_cases(df1)
 
-  pres_disp_values <- table_pres_disp %>% pull(pres_disp)
+  table_pres_disp <- out$table_pres_disp
+  pres_disp_df <- out$pres_disp
 
   # Dispositional Departures
-  table_disp_dep <- disp_dep_cases(df1, pres_disp_values)
+  table_disp_dep <- disp_dep_cases(df1, pres_disp_df)
 
   # Durational Departures
   table_dur_dep <- dur_dep_cases(df1)
