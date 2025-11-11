@@ -91,7 +91,8 @@ pres_disp_cases <- function(data_frame) {
       Stay = dplyr::if_else(total == 0, "0.0%", paste0(format(round(Stay / total * 100, 1), nsmall = 1), "%")),
       Commit = dplyr::if_else(total == 0, "0.0%", paste0(format(round(Commit / total * 100, 1), nsmall = 1), "%"))
     ) %>%
-    dplyr::select(history, Stay, Commit)
+    dplyr::select(history, Stay, Commit) %>%
+    dplyr::mutate(dplyr::across(everything(), ~ gsub("NaN%", "0.0%", .)))
 
   pres_disp <- pres_disp %>%
     dplyr::mutate(
