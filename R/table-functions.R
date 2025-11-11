@@ -111,7 +111,7 @@ pres_disp_cases <- function(data_frame) {
                                !stringr::str_detect(Commit, "%"), 1, 0)
     )
 
-  return(table_pres_disp, pres_disp)
+  return(list(table_pres_disp = table_pres_disp, pres_disp = pres_disp))
 }
 
 
