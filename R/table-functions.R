@@ -161,7 +161,7 @@ pres_disp_cases <- function(data_frame) {
                                                nsmall = 1), "%")))
     )
 
-    dis_dep_percentages <- disp_dep %>%
+    disp_dep_percentages <- disp_dep %>%
       dplyr::mutate(none_percent = paste0(format(round(None / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%"),
                     aggravated_percent = paste0(format(round(Aggravated / pres_disp$Stay * 100, 1), nsmall = 1), "%"),
                     mitigated_percent = paste0(format(round(Mitigated / pres_disp$Commit * 100, 1), nsmall = 1), "%")) %>%
@@ -171,14 +171,14 @@ pres_disp_cases <- function(data_frame) {
                     "Mitigated" = mitigated_percent) %>%
       dplyr::mutate(dplyr::across(everything(), ~ gsub("NaN%", "0.0%", .)))
 
-    dis_dep <- dis_dep %>%
+    disp_dep <- disp_dep %>%
       dplyr::mutate(None = as.factor(None),
                     Aggravated = as.factor(Aggravated),
                     Mitigated = as.factor(Mitigated))
 
-    table_disp_dep <- dplyr::bind_rows(dis_dep,
+    table_disp_dep <- dplyr::bind_rows(disp_dep,
                                        total_disp_dep_cases,
-                                       dis_dep_percentages) %>%
+                                       disp_dep_percentages) %>%
       dplyr::mutate(dplyr::across(dplyr::everything(), ~ gsub("NaN%", "0.0%", .))) %>%
       dplyr::arrange(history) %>%
       dplyr::mutate(cases = dplyr::if_else(!stringr::str_detect(None, "%") &
