@@ -65,7 +65,7 @@ chs_data_request <- function(data,
   table_dur_dep <- dur_dep_cases(df1)
 
   # Combine all into one final table
-  final_chs_table(table_total_cases, table_pres_disp, table_disp_dep, table_dur_dep)
+  final_chs_table <- final_chs_table(table_total_cases, table_pres_disp, table_disp_dep, table_dur_dep)
 
   ################################################################
   # Departure and plea reasons template
