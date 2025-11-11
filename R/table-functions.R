@@ -93,6 +93,12 @@ pres_disp_cases <- function(data_frame) {
     ) %>%
     dplyr::select(history, Stay, Commit)
 
+  pres_disp <- pres_disp %>%
+    dplyr::mutate(
+      Stay = as.character(Stay),
+      Commit = as.character(Commit)
+    )
+
   # Final table
   table_pres_disp <- dplyr::bind_rows(
     pres_disp,
