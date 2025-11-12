@@ -64,6 +64,7 @@ pres_disp_cases <- function(data_frame) {
     dplyr::count(history, presumpt) %>%
     dplyr::mutate(
       history = factor(history, levels = as.character(0:6)),
+      presumpt = if_else(presumpt == 1, "Stay", "Commit"),
       presumpt = factor(presumpt, levels = c("Stay", "Commit"))
     ) %>%
     tidyr::complete(history, presumpt, fill = list(n = 0)) %>%
@@ -134,7 +135,12 @@ pres_disp_cases <- function(data_frame) {
       dplyr::mutate(
         history = as.factor(history),
         history = factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
-        dispdep = as.factor(dispdep),
+        dispdep = case_when(
+          dispdep == 0 ~ "None",
+          dispdep == 1 ~ "Aggravated",
+          dispdep == 2 ~ "Mitigated",
+          TRUE ~ "99999"
+        ),
         dispdep = factor(dispdep, levels = c("None", "Aggravated", "Mitigated"))
       ) %>%
       dplyr::count(history, dispdep) %>%
