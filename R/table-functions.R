@@ -60,6 +60,13 @@ total_cases_by_chs <- function(data_frame) {
 
 pres_disp_cases <- function(data_frame) {
 
+  pres_disp_cases <- function(data_frame) {
+    print("Rows received:")
+    print(nrow(data_frame))
+    print("Presumpt value breakdown:")
+    print(table(data_frame$presumpt, useNA = "always"))
+
+
   pres_disp <- data_frame %>%
     dplyr::count(history, presumpt) %>%
     dplyr::mutate(
@@ -166,7 +173,8 @@ pres_disp_cases <- function(data_frame) {
                     as.character(paste0(format(round(sum(disp_dep$Mitigated) /
                                                        sum(pres_disp$Commit) * 100, 1),
                                                nsmall = 1), "%")))
-    )
+    ) %>%
+    dplyr::mutate(dplyr::across(everything(), ~ gsub("NaN%", "0.0%", .)))
 
     disp_dep_percentages <- disp_dep %>%
       dplyr::mutate(none_percent = paste0(format(round(None / (None + Aggravated + Mitigated) * 100, 1), nsmall = 1), "%"),
