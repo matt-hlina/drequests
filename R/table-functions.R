@@ -60,7 +60,6 @@ total_cases_by_chs <- function(data_frame) {
 
 pres_disp_cases <- function(data_frame) {
 
-  pres_disp_cases <- function(data_frame) {
     print("Rows received:")
     print(nrow(data_frame))
     print("Presumpt value breakdown:")
