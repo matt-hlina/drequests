@@ -10,6 +10,8 @@ utils::globalVariables(c(
   "Maxtime",
   "Mintime",
   "Mitigated",
+  "mit_disp",
+  "mit_dur",
   "N",
   "None",
   "Offense",
