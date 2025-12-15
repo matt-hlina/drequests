@@ -72,11 +72,11 @@ chs_data_request <- function(data,
   ################################################################
 
   # Mitigated dispositional departure reasons
-  mdd_reasons <- dep_reasons(df1, mit_disp)
+  mdd_reasons <- dep_reasons(df1, dep_type = "mit_disp")
 
   ############################################
   # Mitigated durational departure reasons
-  mit_dur_dep_reasons <- dep_reasons(df1, mit_dur)
+  mit_dur_dep_reasons <- dep_reasons(df1, dep_type = "mit_dur")
 
 
   ################################################################
@@ -84,11 +84,11 @@ chs_data_request <- function(data,
   ################################################################
 
   # Mitigated dispositional departure reasons
-  mit_disp_plea_df <- dep_plea_reasons(df1, mit_disp)
+  mit_disp_plea_df <- dep_plea_reasons(df1, dep_type = "mit_disp")
 
   ############################################
   # Mitigated durational departure reasons
-  mit_dur_plea_df <- dep_plea_reasons(df1, mit_dur)
+  mit_dur_plea_df <- dep_plea_reasons(df1, dep_type = "mit_dur")
 
 
   ###########################################################################
