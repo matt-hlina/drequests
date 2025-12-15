@@ -5,6 +5,7 @@ utils::globalVariables(c(
   "df1",
   "data_frame",
   "data_set",
+  "dep_type",
   "final_chs_table",
   "Maxtime",
   "Mintime",
