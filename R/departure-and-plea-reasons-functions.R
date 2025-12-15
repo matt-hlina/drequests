@@ -2,7 +2,7 @@
 # Departure and plea reasons functions
 ############################################################################
 
-#' Departure and plea reasons functions
+#' Departure reasons function
 #'
 #' @param data_frame a filtered 'data.frame' of the departure reasons for
 #' departures within the data set.
@@ -71,6 +71,8 @@ dep_reasons <- function(data_frame,
   return(dep_reasons)
 }
 
+#' Departure plea reasons function
+#'
 #' @param data_frame a filtered 'data.frame' of the departure plea reasons for
 #' departures within the data set.
 #' @param dep_type the type of departure to filter the data by: mit_disp, mit_dur,
