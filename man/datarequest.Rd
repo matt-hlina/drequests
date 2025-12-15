@@ -31,12 +31,6 @@ Four arguments that are derivatives of variables exist: variablename_min,
 variablename_max, reason, and preason. variablename_min and _max are used for
 selecting a range of data, (i.e., sentyear) and reason and preason are used for
 selecting departure reasons and plea reasons.}
-
-\item{mit_disp}{represents mitigated dispositional departure. used for filtering
-in departure reasons and plea reasons function.}
-
-\item{mit_dur}{represents mitigated durational departure. used for filtering
-in departure reasons and plea reasons function.}
 }
 \description{
 CHS data request function
