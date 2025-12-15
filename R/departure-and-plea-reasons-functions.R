@@ -36,8 +36,7 @@ dep_reasons <- function(data_frame,
 
   # Number of departure cases
   dep_cases <- data_frame %>%
-    dplyr::summarize(N = n()) %>%
-    print()
+    dplyr::summarize(N = n())
 
   # Determine data filters and convert dep reason1-4 to long format
   dep_reasons_long <- data_frame %>%
@@ -105,10 +104,9 @@ dep_plea_reasons <- function(data_frame,
 
   # Number of departure cases
   dep_cases <- data_frame %>%
-    dplyr::summarize(N = n()) %>%
-    print()
+    dplyr::summarize(N = n())
 
-  disp_plea_df <- df1 %>%
+  disp_plea_df <- data_frame %>%
     dplyr::mutate(unknown = dplyr::if_else(preason1 == 0 | preason2 == 0 | preason3 == 0,
                                            1, 0),
                   accepts = dplyr::if_else(preason1 == 440 | preason2 == 440 | preason3 == 440,
