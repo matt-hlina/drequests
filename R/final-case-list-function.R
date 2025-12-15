@@ -20,7 +20,7 @@ case_list <- function(df1) {
         cnsdep, reason1, reason2, reason3, reason4,
         preason1, preason2, preason3, Offense
       ),
-      as.factor
+      as_factor
     ),
     severity = dplyr::case_when(
       severity == "51" ~ "D1",
