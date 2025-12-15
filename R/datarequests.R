@@ -52,209 +52,44 @@ chs_data_request <- function(data,
   # Total cases by CHS
   table_total_cases <- total_cases_by_chs(df1)
 
-  # Presumptive Disposition
+  # Cases by Presumptive Disposition
   out <- pres_disp_cases(df1)
 
   table_pres_disp <- out$table_pres_disp
   pres_disp_df <- out$pres_disp
 
-  # Dispositional Departures
+  # Cases by Dispositional Departures
   table_disp_dep <- disp_dep_cases(df1, pres_disp_df)
 
-  # Durational Departures
+  # Cases by Durational Departures
   table_dur_dep <- dur_dep_cases(df1)
 
   # Combine all into one final table
   final_chs_table <- final_chs_table(table_total_cases, table_pres_disp, table_disp_dep, table_dur_dep)
 
   ################################################################
-  # Departure and plea reasons template
+  # Departure reasons
   ################################################################
 
+  # Mitigated dispositional departure reasons
+  dep_reasons(df1, mit_disp)
 
-  #####################################################
-  # Mitigated dispositional departures
-  #####################################################
-  # Departure reasons
+  ############################################
+  # Mitigated durational departure reasons
+  dep_reasons(df1, mit_dur)
 
-  # Number of mitigated dispositional departure cases
-  mdd_cases <- df1 %>%
-    dplyr::filter(dispdep == 2,
-    ) %>%
-    dplyr::summarize(N = n())
-
-  # Determine data filters and convert dep reason1-4 to long format
-  mit_disp_dep_reasons_long <- df1 %>%
-    dplyr::filter(dispdep == 2
-    ) %>%
-    dplyr::select(reason1,
-           reason2,
-           reason3,
-           reason4) %>%
-    dplyr::mutate(
-      reason1 = as.factor(reason1),
-      reason2 = as.factor(reason2),
-      reason3 = as.factor(reason3),
-      reason4 = as.factor(reason4)) %>%
-    tidyr::pivot_longer(
-      cols = starts_with("reason"),
-      names_to = "reason_number",
-      values_to = "reason"
-    ) %>%
-    dplyr::filter(!is.na(reason),
-           !(reason_number == "reason2" & reason == 0),
-           !(reason_number == "reason3" & reason == 0),
-           !(reason_number == "reason4" & reason == 0))
-
-  # Determine the number of each reason and percent composition
-  mdd_reasons <- mit_disp_dep_reasons_long %>%
-    dplyr::group_by(reason) %>%
-    dplyr::summarize(N = n()) %>%
-    dplyr::mutate(percent = as.factor(paste0(format(round(N / mdd_cases$N * 100, 1), nsmall = 1), "%")),
-           dplyr::across(c(percent), ~ trimws(.))) %>%
-    dplyr::arrange(desc(N))
 
   ################################################################
   # Departure plea reasons
-
-  mit_disp_plea_df <- df1 %>%
-    dplyr::filter(dispdep == 2) %>%
-    dplyr::mutate(unknown = dplyr::if_else(preason1 == 0 | preason2 == 0 | preason3 == 0,
-                             1, 0),
-           accepts = dplyr::if_else(preason1 == 440 | preason2 == 440 | preason3 == 440,
-                             1, 0),
-           pros_objects = dplyr::if_else(preason1 == 441 | preason2 == 441 | preason3 == 441,
-                                  1, 0),
-           pros_not_object = dplyr::if_else(preason1 == 442 | preason2 == 442 | preason3 == 442,
-                                     1, 0),
-           plea_deal = dplyr::if_else(preason1 == 470 | preason2 == 470 | preason3 == 470,
-                               1, 0),
-           pros_motion = dplyr::if_else(preason1 == 599 | preason2 == 599 | preason3 == 599,
-                                 1, 0),
-           pr_accepts = dplyr::if_else(accepts == 1 | pros_not_object == 1 | plea_deal == 1 |
-                                  pros_motion == 1, 1, 0),
-           pr_objects = dplyr::if_else(pros_objects == 1, 1, 0),
-           pr_unknown = dplyr::if_else(unknown == 1 & accepts == 0 & pros_objects == 0 &
-                                  pros_not_object == 0 & plea_deal == 0 & pros_motion == 0, 1, 0),
-           plea_reasons_grp = dplyr::case_when(
-             pr_accepts == 1 ~ "Prosecutor did not Object/Plea Negotiation",
-             pr_objects == 1 ~ "Prosecutor Objects",
-             pr_unknown == 1 ~ "Plea Reason Unknown",
-             TRUE ~ "-99999999999999999999"),
-           plea_reasons_grp = factor(
-             plea_reasons_grp,
-             levels = c(
-               "Prosecutor did not Object/Plea Negotiation",
-               "Prosecutor Objects",
-               "Plea Reason Unknown",
-               "Other Reasons",
-               "Other Reason",
-               "-99999999999999999999")
-           )
-    ) %>%
-    dplyr::group_by(plea_reasons_grp) %>%
-    dplyr::summarize(N = n()) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(percent = as.factor(paste0(format(round(N / mdd_cases$N * 100, 1), nsmall = 1), "%")),
-           dplyr::across(c(percent), ~ trimws(.))) %>%
-    dplyr::arrange(plea_reasons_grp)
-
-  ################################################################
-  # Durational departure reasons
   ################################################################
 
-  # Mitigated durational departures
-  ################################################################
-  # Departure reasons
+  # Mitigated dispositional departure reasons
+  dep_plea_reasons(df1, mit_disp)
 
-  # Number of mitigated durational departure cases
-  mitigated_dur_dep_cases <- df1 %>%
-    dplyr::filter(durdep == 2,
-           prison == 100
-    ) %>%
-    dplyr::summarize(N = n())
+  ############################################
+  # Mitigated durational departure reasons
+  dep_plea_reasons(df1, mit_dur)
 
-  # Determine data filters and convert dep reason1-4 to long format
-  dur_dep_reasons_long <- df1 %>%
-    dplyr::filter(durdep == 2,
-           prison == 100
-    ) %>%
-    dplyr::select(reason1,
-           reason2,
-           reason3,
-           reason4) %>%
-    dplyr::mutate(
-      reason1 = as.factor(reason1),
-      reason2 = as.factor(reason2),
-      reason3 = as.factor(reason3),
-      reason4 = as.factor(reason4)) %>%
-    tidyr::pivot_longer(
-      cols = starts_with("reason"),
-      names_to = "reason_number",
-      values_to = "reason"
-    ) %>%
-    dplyr::filter(!is.na(reason))
-
-  # Determine the number of each reason and percent composition
-  mit_dur_dep_reasons <- dur_dep_reasons_long %>%
-    dplyr::filter(reason != 0) %>%
-    dplyr::group_by(reason) %>%
-    dplyr::summarize(N = n()) %>%
-    dplyr::mutate(percent = as.factor(paste0(format(round(N / sum(mitigated_dur_dep_cases$N) * 100, 1), nsmall = 1), "%")),
-           dplyr::across(c(percent), ~ trimws(.))) %>%
-    dplyr::arrange(desc(N))
-
-  ################################################################
-  # Departure plea reasons
-
-  mit_dur_plea_df <- df1 %>%
-    dplyr::filter(durdep == 2,
-           prison == 100) %>%
-    dplyr::mutate(unknown = dplyr::if_else(preason1 == 0 | preason2 == 0 | preason3 == 0,
-                             1, 0),
-           accepts = dplyr::if_else(preason1 == 440 | preason2 == 440 | preason3 == 440,
-                             1, 0),
-           pros_objects = dplyr::if_else(preason1 == 441 | preason2 == 441 | preason3 == 441,
-                                  1, 0),
-           pros_not_object = dplyr::if_else(preason1 == 442 | preason2 == 442 | preason3 == 442,
-                                     1, 0),
-           plea_deal = dplyr::if_else(preason1 == 470 | preason2 == 470 | preason3 == 470,
-                               1, 0),
-           pros_motion = dplyr::if_else(preason1 == 599 | preason2 == 599 | preason3 == 599,
-                                 1, 0),
-           pr_accepts = dplyr::if_else(accepts == 1 | pros_not_object == 1 | plea_deal == 1 |
-                                  pros_motion == 1, 1, 0),
-           pr_objects = dplyr::if_else(pros_objects == 1, 1, 0),
-           pr_unknown = dplyr::if_else(unknown == 1 & accepts == 0 & pros_objects == 0 &
-                                  pros_not_object == 0 & plea_deal == 0 & pros_motion == 0, 1, 0),
-           pr_other = dplyr::if_else(unknown != 1 &
-                                accepts != 1 &
-                                pros_objects != 1 &
-                                pros_not_object != 1 &
-                                plea_deal != 1 &
-                                pros_motion != 1, 1, 0),
-           plea_reasons_grp = dplyr::case_when(
-             pr_accepts == 1 ~ "Prosecutor did not Object/Plea Negotiation",
-             pr_objects == 1 ~ "Prosecutor Objects",
-             pr_unknown == 1 ~ "Plea Reason Unknown",
-             pr_other == 1 ~ "Other Reason",
-             TRUE ~ "-99999999999999999999"),
-           plea_reasons_grp = factor(
-             plea_reasons_grp,
-             levels = c(
-               "Prosecutor did not Object/Plea Negotiation",
-               "Prosecutor Objects",
-               "Plea Reason Unknown",
-               "Other Reasons",
-               "-99999999999999999999")
-           )
-    ) %>%
-    dplyr::group_by(plea_reasons_grp) %>%
-    dplyr::summarize(N = n()) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(percent = as.factor(paste0(format(round(N / mitigated_dur_dep_cases$N * 100, 1), nsmall = 1), "%")),
-           dplyr::across(c(percent), ~ trimws(.))) %>%
-    dplyr::arrange(plea_reasons_grp)
 
   ###########################################################################
   # Return final result in Excel file
