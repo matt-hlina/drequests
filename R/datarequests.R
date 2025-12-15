@@ -9,10 +9,6 @@
 #' @param case_list_path pathway where the case list will be saved.
 #' @param output_name name of the report output file.
 #' @param output_path pathway where the report output will be saved.
-#' @param mit_disp represents mitigated dispositional departure. used for filtering
-#' in departure reasons and plea reasons function.
-#' @param mit_dur represents mitigated durational departure. used for filtering
-#' in departure reasons and plea reasons function.
 #' @param ... represents any variable within the data set. When a variable is used
 #' as an argument, the definition of the argument will be used to filter the data.
 #' Four arguments that are derivatives of variables exist: variablename_min,
@@ -76,11 +72,11 @@ chs_data_request <- function(data,
   ################################################################
 
   # Mitigated dispositional departure reasons
-  dep_reasons(df1, mit_disp)
+  mdd_reasons <- dep_reasons(df1, mit_disp)
 
   ############################################
   # Mitigated durational departure reasons
-  dep_reasons(df1, mit_dur)
+  mit_dur_dep_reasons <- dep_reasons(df1, mit_dur)
 
 
   ################################################################
@@ -88,11 +84,11 @@ chs_data_request <- function(data,
   ################################################################
 
   # Mitigated dispositional departure reasons
-  dep_plea_reasons(df1, mit_disp)
+  mit_disp_plea_df <- dep_plea_reasons(df1, mit_disp)
 
   ############################################
   # Mitigated durational departure reasons
-  dep_plea_reasons(df1, mit_dur)
+  mit_dur_plea_df <- dep_plea_reasons(df1, mit_dur)
 
 
   ###########################################################################
