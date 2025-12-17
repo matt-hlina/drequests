@@ -17,8 +17,8 @@ case_list <- function(df1) {
       c(
         county, Agecat, sex, race, severity, typecust, presumpt, plea,
         inctype, stayexec, impose, condconf, consec, dispdep, durdep,
-        cnsdep, reason1, reason2, reason3, reason4,
-        preason1, preason2, preason3, Offense
+        cnsdep, reason1, reason2, reason3, reason4, typeprob,
+        preason1, preason2, preason3, Offense, offtype
       ),
       as_factor
     ),
@@ -36,13 +36,16 @@ case_list <- function(df1) {
     ) %>%
     dplyr::arrange(district, county, jlname, sentyear) %>%
     dplyr::select(
-      "Conviction Statute" = convstat,
-      "Offense Name" = Offense_Title,
+      "Statute Chapter" = schap,
+      "Statute Section" = ssection,
+      "Statite Subdivision" = ssubd,
+      "Offense" = Offense,
+      "Type of Offense" = offtype,
+      "Offense Date" = doff,
+      "Type of Custody Offender on at Time of Offense" = typecust,
       "Year Sentenced" = sentyear,
       "District" = district,
       "County" = county,
-      "Judge Last Name" = jlname,
-      "Judge First Name" = jfname,
       "Case Number" = dcnum,
       "Count Number" = count,
       "Attempt" = attempt,
@@ -50,24 +53,24 @@ case_list <- function(df1) {
       "Age Category" = Agecat,
       "Sex" = sex,
       "Race" = race,
-      "Offense Date" = doff,
       "Severity Level" = severity,
-      "Type of Custody Offender on at Time of Offense" = typecust,
       "Total Criminal History Points" = histall,
       "Criminal History Score" = history,
       "Presumptive Disposition" = presumpt,
       "Presumptive Duration (months)" = time,
       "Lower Range" = Mintime,
       "Upper Range" = Maxtime,
+      "Statutory Maximum" = statmax,
       "Plea" = plea,
-      "Pronounced Incarceration Type" = inctype,
-      "Pronounced Confinement (months)" = confine,
       "Stay of Execution" = stayexec,
       "Stay of Imposition" = impose,
       "Length of Stay" = staylnth,
+      "Type of Probation" = typeprob,
       "Conditional Confinement (days)" = condconf,
       "Received Consecutive Sentence" = consec,
       "Total Consecutive Sentence (months)" = aggsentc,
+      "Pronounced Confinement (months)" = confine,
+      "Pronounced Incarceration Type" = inctype,
       "Dispositional Departure" = dispdep,
       "Durational Departure" = durdep,
       "Consecutive Departure" = cnsdep,
@@ -78,7 +81,8 @@ case_list <- function(df1) {
       "Plea Reason 1" = preason1,
       "Plea Reason 2" = preason2,
       "Plea Reason 3" = preason3,
-      "Penalty Statute" = penaltystat
+      "Judge Last Name" = jlname,
+      "Judge First Name" = jfname,
     )
 }
 
