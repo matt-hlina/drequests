@@ -62,8 +62,6 @@ pres_disp_cases <- function(data_frame) {
 
     print("Rows received:")
     print(nrow(data_frame))
-    print("Presumpt value breakdown:")
-    print(table(data_frame$presumpt, useNA = "always"))
 
 
   pres_disp <- data_frame %>%
@@ -315,8 +313,7 @@ pres_disp_cases <- function(data_frame) {
       mutate(history = "Total",
              across(everything(), ~replace_na(.x, '0')),
              cases = 1,
-             across(everything(), ~as.character(.x))) %>%
-      print(n = Inf)
+             across(everything(), ~as.character(.x)))
 
     table_pris_dur <- pris_dur %>%
       bind_rows(all_pris_dur) %>%
