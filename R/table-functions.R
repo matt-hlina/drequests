@@ -284,6 +284,38 @@ pres_disp_cases <- function(data_frame) {
     return(table_dur_dep)
   }
 
+
+  #' @param data_frame a filtered 'data.frame' of the cases requested in the data request.
+  #'
+  #' @return a 'data.frame' of the average prison duration sentenced for each Criminal History Score.
+  #'
+  #' @keywords internal
+  #' @name table_functions
+
+  prison_duration <- function(data_frame) {
+    pris_dur <- data_frame %>%
+      dplyr::filter(
+        prison == 100
+      ) %>%
+      dplyr::group_by(history) %>%
+      dplyr::mutate(
+        history = factor(history, levels = c("0", "1", "2", "3", "4", "5", "6")),
+      ) %>%
+      dplyr::summarize(avg_dur = format(round(mean(confine), 1))) %>%
+      tidyr::complete(history) %>%
+      dplyr::mutate(dplyr::across(dplyr::everything(), ~replace_na(.x, '0')),
+             cases = 1,
+             dplyr::across(dplyr::everything(), ~as.character(.x))) %>%
+      print(n = Inf)
+
+    table_pris_dur <- pris_dur %>%
+      dplyr::mutate(cases = as.numeric(cases)) %>%
+      print()
+
+    return(table_pris_dur)
+  }
+
+
   #' @param table_total_cases a 'data.frame' of the total cases for the data set grouped by Criminal
   #' History Score.
   #' @param table_pres_disp a 'data.frame' of the total cases for the data set grouped by Criminal
@@ -295,28 +327,34 @@ pres_disp_cases <- function(data_frame) {
   #' @param table_dur_dep a 'data.frame' of the total cases for the data set grouped by Criminal
   #' History Score and durational departures. Percentages are calculated using
   #' prison sentences only.
+  #' @param table_pris_dur a 'data.frame' of the average prison duration sentenced for each
+  #' Criminal History Score.
   #'
   #' @return A 'data.frame' all data request table columns combined into one table.
   #'
   #' @keywords internal
   #' @name table_functions
 
-  final_chs_table <- function(table_total_cases, table_pres_disp, table_disp_dep, table_dur_dep) {
+  final_chs_table <- function(table_total_cases, table_pres_disp, table_disp_dep,
+                              table_dur_dep, table_pris_dur) {
 
     final_table <- table_total_cases %>%
-    dplyr::left_join(table_pres_disp, by = c("history", "cases")) %>%
-    dplyr::left_join(table_disp_dep, by = c("history", "cases")) %>%
-    dplyr::left_join(table_dur_dep, by = c("history", "cases")) %>%
-    dplyr::select(history,
-                  N,
-                  Stay,
-                  Commit,
-                  none_disp,
-                  agg_disp,
-                  mit_disp,
-                  none_dur,
-                  agg_dur,
-                  mit_dur)
+      dplyr::left_join(table_pres_disp, by = c("history", "cases")) %>%
+      dplyr::left_join(table_disp_dep, by = c("history", "cases")) %>%
+      dplyr::left_join(table_dur_dep, by = c("history", "cases")) %>%
+      dplyr::left_join(table_pris_dur, by = c("history", "cases")) %>%
+      dplyr::select(history,
+                    N,
+                    Stay,
+                    Commit,
+                    none_disp,
+                    agg_disp,
+                    mit_disp,
+                    none_dur,
+                    agg_dur,
+                    mit_dur,
+                    avg_dur) %>%
+      dplyr::mutate(dplyr::across(dplyr::everything(), ~replace_na(.x, "")))
 
     return(final_table)
 
