@@ -305,12 +305,10 @@ pres_disp_cases <- function(data_frame) {
       tidyr::complete(history) %>%
       dplyr::mutate(dplyr::across(dplyr::everything(), ~replace_na(.x, '0')),
              cases = 1,
-             dplyr::across(dplyr::everything(), ~as.character(.x))) %>%
-      print(n = Inf)
+             dplyr::across(dplyr::everything(), ~as.character(.x)))
 
     table_pris_dur <- pris_dur %>%
-      dplyr::mutate(cases = as.numeric(cases)) %>%
-      print()
+      dplyr::mutate(cases = as.numeric(cases))
 
     return(table_pris_dur)
   }
