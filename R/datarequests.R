@@ -64,8 +64,12 @@ chs_data_request <- function(data,
   # Cases by Durational Departures
   table_dur_dep <- dur_dep_cases(df1)
 
+  # Avg prison duration at each CHS
+  table_pris_dur <- prison_duration(df1)
+
   # Combine all into one final table
-  final_chs_table <- final_chs_table(table_total_cases, table_pres_disp, table_disp_dep, table_dur_dep)
+  final_chs_table <- final_chs_table(table_total_cases, table_pres_disp, table_disp_dep,
+                                     table_dur_dep, table_pris_dur)
 
   ################################################################
   # Departure reasons
