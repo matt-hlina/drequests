@@ -6,6 +6,7 @@
 \alias{pres_disp_cases}
 \alias{disp_dep_cases}
 \alias{dur_dep_cases}
+\alias{prison_duration}
 \alias{final_chs_table}
 \title{Table functions}
 \usage{
@@ -17,11 +18,14 @@ disp_dep_cases(data_frame, pres_disp)
 
 dur_dep_cases(data_frame)
 
+prison_duration(data_frame)
+
 final_chs_table(
   table_total_cases,
   table_pres_disp,
   table_disp_dep,
-  table_dur_dep
+  table_dur_dep,
+  table_pris_dur
 )
 }
 \arguments{
@@ -43,6 +47,9 @@ commits as the denominator for mitigated dispositional departures.}
 \item{table_dur_dep}{a 'data.frame' of the total cases for the data set grouped by Criminal
 History Score and durational departures. Percentages are calculated using
 prison sentences only.}
+
+\item{table_pris_dur}{a 'data.frame' of the average prison duration sentenced for each
+Criminal History Score.}
 }
 \value{
 a 'data.frame' of the total cases for the data set grouped by Criminal
@@ -59,6 +66,8 @@ commits as the denominator for mitigated dispositional departures.
 a 'data.frame' of the total cases for the data set grouped by Criminal
 History Score and durational departures. Percentages are calculated using
 prison sentences only.
+
+a 'data.frame' of the average prison duration sentenced for each Criminal History Score.
 
 A 'data.frame' all data request table columns combined into one table.
 }
