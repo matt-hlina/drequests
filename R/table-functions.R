@@ -307,7 +307,19 @@ pres_disp_cases <- function(data_frame) {
              cases = 1,
              dplyr::across(dplyr::everything(), ~as.character(.x)))
 
+    all_pris_dur <- data_frame %>%
+      filter(
+        prison == 100
+      ) %>%
+      summarize(avg_dur = format(round(mean(confine), 1))) %>%
+      mutate(history = "Total",
+             across(everything(), ~replace_na(.x, '0')),
+             cases = 1,
+             across(everything(), ~as.character(.x))) %>%
+      print(n = Inf)
+
     table_pris_dur <- pris_dur %>%
+      bind_rows(all_pris_dur) %>%
       dplyr::mutate(cases = as.numeric(cases))
 
     return(table_pris_dur)
