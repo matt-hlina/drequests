@@ -53,16 +53,15 @@ requested_cases <- function(data, filters) {
 
     } else if (name == "any_of") {
 
-      vars  <- value$vars
-      match <- value$value
-
-      df1 <- df1 %>%
-        dplyr::filter(
-          dplyr::if_any(
-            dplyr::all_of(vars),
-            ~ .x %in% match
+      for (cond in value) {
+        df1 <- df1 %>%
+          dplyr::filter(
+            dplyr::if_any(
+              dplyr::all_of(cond$vars),
+              ~ .x %in% cond$value
+            )
           )
-        )
+      }
 
     } else {
       df1 <- df1 %>% dplyr::filter(.data[[name]] == value)
