@@ -19,7 +19,20 @@ requested_cases <- function(data, filters) {
 
     if (is.null(value)) next
 
-    if (stringr::str_ends(name, "_min")) {
+
+    if (name == "any_of") {
+
+      for (cond in value) {
+        df1 <- df1 %>%
+          dplyr::filter(
+            dplyr::if_any(
+              dplyr::all_of(cond$vars),
+              ~ .x %in% cond$value
+            )
+          )
+      }
+
+    } else if (stringr::str_ends(name, "_min")) {
       var <- stringr::str_remove(name, "_min$")
       df1 <- df1 %>%
         dplyr::filter(.data[[var]] >= value)
@@ -51,17 +64,6 @@ requested_cases <- function(data, filters) {
         dplyr::filter(preason_match == 1) %>%
         dplyr::select(-preason_match)
 
-    } else if (name == "any_of") {
-
-      for (cond in value) {
-        df1 <- df1 %>%
-          dplyr::filter(
-            dplyr::if_any(
-              dplyr::all_of(cond$vars),
-              ~ .x %in% cond$value
-            )
-          )
-      }
 
     } else {
       df1 <- df1 %>% dplyr::filter(.data[[name]] == value)
