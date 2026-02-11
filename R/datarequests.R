@@ -14,10 +14,13 @@
 #' Four arguments that are derivatives of variables exist: variablename_min,
 #' variablename_max, reason, and preason. variablename_min and _max are used for
 #' selecting a range of data, (i.e., sentyear) and reason and preason are used for
-#' selecting departure reasons and plea reasons.
+#' selecting departure reasons and plea reasons. Finally an argument called any_of
+#' can be used to select cases where the presence of one OR more conditions exist
+#' (i.e,. subsex == 1 OR newsexmod == 1).
 #'
 #' @import dplyr
 #' @import forcats
+#' @import haven
 #' @import tibble
 #' @export
 #'
@@ -112,6 +115,120 @@ chs_data_request <- function(data,
 
 }
 
+#' County data request function
+#'
+#' @param data 'data.frame' of Sentencing Guidelines public data set.
+#' @param case_list_name name of the case list file.
+#' @param case_list_path pathway where the case list will be saved.
+#' @param output_name name of the report output file.
+#' @param output_path pathway where the report output will be saved.
+#' @param ... represents any variable within the data set. When a variable is used
+#' as an argument, the definition of the argument will be used to filter the data.
+#' Four arguments that are derivatives of variables exist: variablename_min,
+#' variablename_max, reason, and preason. variablename_min and _max are used for
+#' selecting a range of data, (i.e., sentyear) and reason and preason are used for
+#' selecting departure reasons and plea reasons. Finally an argument called any_of
+#' can be used to select cases where the presence of one OR more conditions exist
+#' (i.e,. subsex == 1 OR newsexmod == 1).
+#'
+#' @import dplyr
+#' @import forcats
+#' @import tibble
+#' @export
+#'
+#' @name datarequest
+
+county_data_request <- function(data,
+                                case_list_name,
+                                case_list_path,
+                                output_name,
+                                output_path,
+                                ...) {
+
+  filters <- list(...)
+
+  ###########################################################################
+  # Everything below is pipeline
+  ###########################################################################
+
+  # Create case list #
+
+  # filter for cases of interest to the requester
+  df1 <- requested_cases(data, filters) # function found in filter-function.R
+
+  # select only the necessary variables for the final case list
+  data_set <- case_list(df1) # function found in final-case-list-function.R
+
+  # save the case list under the directed pathway with the directed name
+  create_excel(data_set, case_list_name, case_list_path)
+
+  ########################################################################
+  # Create report tables #
+  # Total cases by CHS
+  table_total_cases <- total_cases_by_county(df1)
+
+  # Cases by Presumptive Disposition
+  out <- pres_disp_cases_by_county(df1)
+
+  table_pres_disp <- out$table_pres_disp
+  pres_disp_df <- out$pres_disp_county
+
+  # Cases by Dispositional Departures
+  table_disp_dep <- disp_dep_cases_by_county(df1, pres_disp_df)
+
+  # Cases by Durational Departures
+  table_dur_dep <- dur_dep_cases_by_county(df1)
+
+  # Avg prison duration at each CHS
+  table_pris_dur <- prison_duration_by_county(df1)
+
+  # Combine all into one final table
+  final_county_table <- final_table_by_county(table_total_cases,
+                                               table_pres_disp,
+                                               table_disp_dep,
+                                               table_dur_dep,
+                                               table_pris_dur)
+
+  ################################################################
+  # Departure reasons
+  ################################################################
+
+  # Mitigated dispositional departure reasons
+  mdd_reasons <- dep_reasons(df1, dep_type = "mit_disp")
+
+  ############################################
+  # Mitigated durational departure reasons
+  mit_dur_dep_reasons <- dep_reasons(df1, dep_type = "mit_dur")
+
+
+  ################################################################
+  # Departure plea reasons
+  ################################################################
+
+  # Mitigated dispositional departure reasons
+  mit_disp_plea_df <- dep_plea_reasons(df1, dep_type = "mit_disp")
+
+  ############################################
+  # Mitigated durational departure reasons
+  mit_dur_plea_df <- dep_plea_reasons(df1, dep_type = "mit_dur")
+
+
+  ###########################################################################
+  # Return final result in Excel file
+  ###########################################################################
+  report_table <- list(
+    "table" = final_county_table,
+    "mit-disp-dep-reas" = mdd_reasons,
+    "mit-disp-dep-plea-reas" = mit_disp_plea_df,
+    "mit-dur-dep-reas" = mit_dur_dep_reasons,
+    "mit-dur-dep-plea-reas" = mit_dur_plea_df
+  )
+
+
+  # save the report table output under the directed pathway with the directed name
+  create_excel(report_table, output_name, output_path)
+
+}
 
 
 
