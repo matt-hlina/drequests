@@ -3,9 +3,19 @@
 \name{datarequest}
 \alias{datarequest}
 \alias{chs_data_request}
+\alias{county_data_request}
 \title{CHS data request function}
 \usage{
 chs_data_request(
+  data,
+  case_list_name,
+  case_list_path,
+  output_name,
+  output_path,
+  ...
+)
+
+county_data_request(
   data,
   case_list_name,
   case_list_path,
@@ -30,8 +40,12 @@ as an argument, the definition of the argument will be used to filter the data.
 Four arguments that are derivatives of variables exist: variablename_min,
 variablename_max, reason, and preason. variablename_min and _max are used for
 selecting a range of data, (i.e., sentyear) and reason and preason are used for
-selecting departure reasons and plea reasons.}
+selecting departure reasons and plea reasons. Finally an argument called any_of
+can be used to select cases where the presence of one OR more conditions exist
+(i.e,. subsex == 1 OR newsexmod == 1).}
 }
 \description{
 CHS data request function
+
+County data request function
 }
