@@ -2,7 +2,9 @@
 
 export("%>%")
 export(chs_data_request)
+export(county_data_request)
 import(dplyr)
 import(forcats)
+import(haven)
 import(tibble)
 importFrom(magrittr,"%>%")
