@@ -184,10 +184,10 @@ county_data_request <- function(data,
 
   # Combine all into one final table
   final_county_table <- final_table_by_county(table_total_cases,
-                                               table_pres_disp,
-                                               table_disp_dep,
-                                               table_dur_dep,
-                                               table_pris_dur)
+                                              table_pres_disp,
+                                              table_disp_dep,
+                                              table_dur_dep,
+                                              table_pris_dur)
 
   ################################################################
   # Departure reasons
