@@ -220,23 +220,23 @@ dur_dep_cases_by_county <- function(data_frame, table) {
   ##################################################
   total_dur_dep_cases <- data.frame(
     county = c("zTotal"),
-    None = sum(dur_dep_cases$None),
-    none_dur_percent = as.character(paste0(format(round(sum(dur_dep_cases$None) /
-                                                          (sum(dur_dep_cases$None) +
-                                                             sum(dur_dep_cases$Aggravated) +
-                                                             sum(dur_dep_cases$Mitigated)) * 100, 1),
+    None = sum(dur_dep$None),
+    none_dur_percent = as.character(paste0(format(round(sum(dur_dep$None) /
+                                                          (sum(dur_dep$None) +
+                                                             sum(dur_dep$Aggravated) +
+                                                             sum(dur_dep$Mitigated)) * 100, 1),
                                                   nsmall = 1), "%")),
-    Aggravated = sum(dur_dep_cases$Aggravated),
-    agg_dur_percent = as.character(paste0(format(round(sum(dur_dep_cases$Aggravated) /
-                                                         (sum(dur_dep_cases$None) +
-                                                            sum(dur_dep_cases$Aggravated) +
-                                                            sum(dur_dep_cases$Mitigated)) * 100, 1),
+    Aggravated = sum(dur_dep$Aggravated),
+    agg_dur_percent = as.character(paste0(format(round(sum(dur_dep$Aggravated) /
+                                                         (sum(dur_dep$None) +
+                                                            sum(dur_dep$Aggravated) +
+                                                            sum(dur_dep$Mitigated)) * 100, 1),
                                                  nsmall = 1), "%")),
-    Mitigated = sum(dur_dep_cases$Mitigated),
-    mit_dur_percent = as.character(paste0(format(round(sum(dur_dep_cases$Mitigated) /
-                                                         (sum(dur_dep_cases$None) +
-                                                            sum(dur_dep_cases$Aggravated) +
-                                                            sum(dur_dep_cases$Mitigated)) * 100, 1),
+    Mitigated = sum(dur_dep$Mitigated),
+    mit_dur_percent = as.character(paste0(format(round(sum(dur_dep$Mitigated) /
+                                                         (sum(dur_dep$None) +
+                                                            sum(dur_dep$Aggravated) +
+                                                            sum(dur_dep$Mitigated)) * 100, 1),
                                                  nsmall = 1), "%"))
   )
 
