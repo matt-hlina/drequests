@@ -196,10 +196,10 @@ county_data_request <- function(data,
   table_disp_dep <- disp_dep_cases_by_county(df1, pres_disp_df)
 
   # Cases by Durational Departures
-  table_dur_dep <- dur_dep_cases_by_county(df1)
+  table_dur_dep <- dur_dep_cases_by_county(df1, table_total_cases)
 
   # Avg prison duration at each CHS
-  table_pris_dur <- prison_duration_by_county(df1)
+  table_pris_dur <- prison_duration_by_county(df1, table_total_cases)
 
   # Combine all into one final table
   final_county_table <- final_table_by_county(table_total_cases,
