@@ -47,8 +47,15 @@ chs_data_request <- function(data,
   # select only the necessary variables for the final case list
   data_set <- case_list(df1) # function found in final-case-list-function.R
 
-  # save the case list under the directed pathway with the directed name
-  create_excel(data_set, case_list_name, case_list_path)
+  # save the case list only if it doesn't already exist
+  case_list_file <- file.path(case_list_path, case_list_name)
+
+  if (!file.exists(case_list_file)) {
+    create_excel(data_set, case_list_name, case_list_path)
+  } else {
+    message("Case list already exists. Skipping creation: ", case_list_file)
+  }
+
 
   ########################################################################
   # Create report tables #
@@ -110,8 +117,14 @@ chs_data_request <- function(data,
   )
 
 
-  # save the report table output under the directed pathway with the directed name
-  create_excel(report_table, output_name, output_path)
+  # save the report output only if it doesn't already exist
+  report_output_file <- file.path(output_path, output_name)
+
+  if (!file.exists(report_output_file)) {
+    create_excel(report_table, output_name, output_path)
+  } else {
+    message("Report output already exists. Skipping creation: ", report_output_file)
+  }
 
 }
 
@@ -159,8 +172,14 @@ county_data_request <- function(data,
   # select only the necessary variables for the final case list
   data_set <- case_list(df1) # function found in final-case-list-function.R
 
-  # save the case list under the directed pathway with the directed name
-  create_excel(data_set, case_list_name, case_list_path)
+  # save the case list only if it doesn't already exist
+  case_list_file <- file.path(case_list_path, case_list_name)
+
+  if (!file.exists(case_list_file)) {
+    create_excel(data_set, case_list_name, case_list_path)
+  } else {
+    message("Case list already exists. Skipping creation: ", case_list_file)
+  }
 
   ########################################################################
   # Create report tables #
@@ -225,8 +244,14 @@ county_data_request <- function(data,
   )
 
 
-  # save the report table output under the directed pathway with the directed name
-  create_excel(report_table, output_name, output_path)
+  # save the report output only if it doesn't already exist
+  report_output_file <- file.path(output_path, output_name)
+
+  if (!file.exists(report_output_file)) {
+    create_excel(report_table, output_name, output_path)
+  } else {
+    message("Report output already exists. Skipping creation: ", report_output_file)
+  }
 
 }
 
