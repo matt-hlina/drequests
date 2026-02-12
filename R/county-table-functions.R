@@ -181,9 +181,9 @@ disp_dep_cases_by_county <- function(data_frame, pres_disp) {
 #' @keywords internal
 #' @name table_functions
 
-dur_dep_cases_by_county <- function(data_frame) {
+dur_dep_cases_by_county <- function(data_frame, table) {
 
-  counties_to_include <- table_total_cases %>%
+  counties_to_include <- table %>%
     filter(county != "zTotal") %>%
     select(county)
 
@@ -258,10 +258,10 @@ dur_dep_cases_by_county <- function(data_frame) {
 #' @keywords internal
 #' @name table_functions
 
-prison_duration_by_county <- function(data_frame) {
+prison_duration_by_county <- function(data_frame, table) {
 
 
-  counties_to_include <- table_total_cases %>%
+  counties_to_include <- table %>%
     filter(county != "zTotal") %>%
     select(county)
 
