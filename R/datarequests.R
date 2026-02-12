@@ -193,7 +193,7 @@ county_data_request <- function(data,
   pres_disp_df <- out$pres_disp_county
 
   # Cases by Dispositional Departures
-  table_disp_dep <- disp_dep_cases_by_county(df1, pres_disp_df)
+  table_disp_dep <- disp_dep_cases_by_county(df1, pres_disp_county)
 
   # Cases by Durational Departures
   table_dur_dep <- dur_dep_cases_by_county(df1)
