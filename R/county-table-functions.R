@@ -19,7 +19,7 @@ total_cases_by_county <- function(data_frame) {
     dplyr::summarize(N = n(), .groups = "drop") %>%
     dplyr::mutate(percent = paste0(format(round(N / sum(N) * 100, 1), nsmall = 1), "%"),
                   county = haven::as_factor(county)
-                  )
+    )
 
   # Total cases
   total_case <- data_frame %>%
@@ -140,24 +140,23 @@ disp_dep_cases_by_county <- function(data_frame, pres_disp) {
                                              as.character(paste0(format(round(Mitigated / pres_disp$Commit * 100, 1),
                                                                         nsmall = 1), "%")))
     ) %>%
-    dplyr::select(county, None, none_disp_percent, Aggravated, agg_disp_percent, Mitigated, mit_disp_percent) %>%
-    print(n = Inf)
+    dplyr::select(county, None, none_disp_percent, Aggravated, agg_disp_percent, Mitigated, mit_disp_percent)
 
   ####################################
   total_disp_dep_cases <- data.frame(
     county = c("zTotal"),
-    None = sum(dis_dep_cases$None),
-    none_disp_percent = as.character(paste0(format(round(sum(dis_dep_cases$None) /
-                                                           (sum(dis_dep_cases$None) +
-                                                              sum(dis_dep_cases$Aggravated) +
-                                                              sum(dis_dep_cases$Mitigated)) * 100, 1),
+    None = sum(disp_dep$None),
+    none_disp_percent = as.character(paste0(format(round(sum(disp_dep$None) /
+                                                           (sum(disp_dep$None) +
+                                                              sum(disp_dep$Aggravated) +
+                                                              sum(disp_dep$Mitigated)) * 100, 1),
                                                    nsmall = 1), "%")),
-    Aggravated = sum(dis_dep_cases$Aggravated),
-    agg_disp_percent = as.character(paste0(format(round(sum(dis_dep_cases$Aggravated) /
+    Aggravated = sum(disp_dep$Aggravated),
+    agg_disp_percent = as.character(paste0(format(round(sum(disp_dep$Aggravated) /
                                                           sum(pres_disp_county$Stay) * 100, 1),
                                                   nsmall = 1), "%")),
-    Mitigated = sum(dis_dep_cases$Mitigated),
-    mit_disp_percent = as.character(paste0(format(round(sum(dis_dep_cases$Mitigated) /
+    Mitigated = sum(disp_dep$Mitigated),
+    mit_disp_percent = as.character(paste0(format(round(sum(disp_dep$Mitigated) /
                                                           sum(pres_disp_county$Commit) * 100, 1),
                                                   nsmall = 1), "%"))
   )
@@ -167,8 +166,7 @@ disp_dep_cases_by_county <- function(data_frame, pres_disp) {
                                      total_disp_dep_cases) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ gsub("NaN%", "0.0%", .))) %>%
     dplyr::arrange(county) %>%
-    dplyr::rename(none_disp = None, agg_disp = Aggravated, mit_disp = Mitigated) %>%
-    print(n = Inf)
+    dplyr::rename(none_disp = None, agg_disp = Aggravated, mit_disp = Mitigated)
 
 
   return(table_disp_dep)
@@ -217,8 +215,7 @@ dur_dep_cases_by_county <- function(data_frame) {
     dplyr::mutate(across(ends_with("_percent"),
                          ~ ifelse(is.nan(as.numeric(gsub("%", "", .))), "0.0%", .))) %>%
     dplyr::select(county, None, none_dur_percent, Aggravated, agg_dur_percent,
-                  Mitigated, mit_dur_percent) %>%
-    print(n = Inf)
+                  Mitigated, mit_dur_percent)
 
   ##################################################
   total_dur_dep_cases <- data.frame(
@@ -248,8 +245,7 @@ dur_dep_cases_by_county <- function(data_frame) {
     dplyr::arrange(county) %>%
     dplyr::mutate(across(ends_with("_percent"),
                          ~ ifelse(. == "", "-", .))) %>%
-    dplyr::rename(none_dur = None, agg_dur = Aggravated, mit_dur = Mitigated) %>%
-    print(n = Inf)
+    dplyr::rename(none_dur = None, agg_dur = Aggravated, mit_dur = Mitigated)
 
   return(table_dur_dep)
 }
@@ -316,7 +312,7 @@ prison_duration_by_county <- function(data_frame) {
 #' @name table_functions
 
 final_table_by_county <- function(table_total_cases, table_pres_disp, table_disp_dep,
-                            table_dur_dep, table_pris_dur) {
+                                  table_dur_dep, table_pris_dur) {
 
   final_table <- table_total_cases %>%
     dplyr::left_join(table_pres_disp, by = c("county")) %>%
