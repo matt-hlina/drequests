@@ -153,11 +153,11 @@ disp_dep_cases_by_county <- function(data_frame, pres_disp) {
                                                    nsmall = 1), "%")),
     Aggravated = sum(disp_dep$Aggravated),
     agg_disp_percent = as.character(paste0(format(round(sum(disp_dep$Aggravated) /
-                                                          sum(pres_disp_county$Stay) * 100, 1),
+                                                          sum(pres_disp$Stay) * 100, 1),
                                                   nsmall = 1), "%")),
     Mitigated = sum(disp_dep$Mitigated),
     mit_disp_percent = as.character(paste0(format(round(sum(disp_dep$Mitigated) /
-                                                          sum(pres_disp_county$Commit) * 100, 1),
+                                                          sum(pres_disp$Commit) * 100, 1),
                                                   nsmall = 1), "%"))
   )
 
