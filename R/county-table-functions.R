@@ -325,6 +325,7 @@ final_table_by_county <- function(table_total_cases, table_pres_disp, table_disp
     dplyr::left_join(table_pris_dur, by = c("county")) %>%
     dplyr::select(county,
                   N,
+                  percent,
                   Stay,
                   stay_percent,
                   Commit,
