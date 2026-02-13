@@ -342,7 +342,8 @@ final_table_by_county <- function(table_total_cases, table_pres_disp, table_disp
                   mit_dur,
                   mit_dur_percent,
                   avg_dur) %>%
-    dplyr::mutate(dplyr::across(dplyr::everything(), ~replace_na(.x, "")))
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~replace_na(.x, ""))) %>%
+    dplyr::mutate(county = ifelse(county == "zTotal", "Total", county))
 
   return(final_table)
 
