@@ -56,8 +56,10 @@ pres_disp_cases_by_county <- function(data_frame) {
   pres_disp_county <- data_frame %>%
     dplyr::count(county, presumpt) %>%
     dplyr::mutate(
-      presumpt = as_factor(presumpt)
+      presumpt = if_else(presumpt == 1, "Stay", "Commit"),
+      presumpt = factor(presumpt, levels = c("Stay", "Commit"))
     ) %>%
+    tidyr::complete(presumpt, fill = list(n = 0)) %>%
     tidyr::pivot_wider(
       names_from = presumpt,
       values_from = n,
@@ -192,7 +194,8 @@ dur_dep_cases_by_county <- function(data_frame, table) {
     dplyr::filter(prison == 100, durdep %in% c(0, 1, 2)) %>%
     dplyr::mutate(
       county = haven::as_factor(county),
-      durdep = haven::as_factor(durdep)
+      durdep = dplyr::recode(as.numeric(durdep), `0` = "None", `1` = "Aggravated", `2` = "Mitigated"),
+      durdep = factor(durdep, levels = c("None", "Aggravated", "Mitigated"))
     ) %>%
     dplyr::count(county, durdep) %>%
     tidyr::complete(county = counties_to_include$county,
