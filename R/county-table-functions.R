@@ -73,7 +73,8 @@ pres_disp_cases_by_county <- function(data_frame) {
                                            "-",
                                            as.character(paste0(format(round(Commit / (Stay + Commit) * 100, 1), nsmall = 1), "%")))
     ) %>%
-    dplyr::select(county, Stay, stay_percent, Commit, commit_percent)
+    dplyr::select(county, Stay, stay_percent, Commit, commit_percent) %>%
+    dplyr::filter(!is.na(county))
 
   # Totals row (count & percentage)
   total_pres_disp <- data.frame(
