@@ -18,7 +18,7 @@ case_list <- function(df1) {
         county, Agecat, sex, race, severity, typecust, presumpt, plea,
         inctype, stayexec, impose, condconf, consec, dispdep, durdep,
         cnsdep, reason1, reason2, reason3, reason4, typeprob,
-        preason1, preason2, preason3, Offense, offtype
+        preason1, preason2, preason3, Offense, offtype, prison
       ),
       as_factor
     ),
@@ -60,6 +60,9 @@ case_list <- function(df1) {
       "Presumptive Duration (months)" = time,
       "Lower Range" = Mintime,
       "Upper Range" = Maxtime,
+      "Executed Prison Sentence?" = prison,
+      "Pronounced Confinement (months)" = confine,
+      "Total Aggragated Sentence (months)" = aggsentc,
       "Statutory Maximum" = statmax,
       "Plea" = plea,
       "Stay of Execution" = stayexec,
@@ -68,8 +71,6 @@ case_list <- function(df1) {
       "Type of Probation" = typeprob,
       "Conditional Confinement (days)" = condconf,
       "Received Consecutive Sentence" = consec,
-      "Total Consecutive Sentence (months)" = aggsentc,
-      "Pronounced Confinement (months)" = confine,
       "Pronounced Incarceration Type" = inctype,
       "Dispositional Departure" = dispdep,
       "Durational Departure" = durdep,
