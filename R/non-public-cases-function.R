@@ -77,8 +77,7 @@ non_public_cases <- function(data, filters) {
   }
 
   else if (!"not_public" %in% names(df1)) {
-    print("The variable not_public was not found in the data. Use data where
-          non-public data can be identified.")
+    print("The variable not_public was not found in the data. Use data where non-public data can be identified.")
   }
 
   print("Non-public cases:")
