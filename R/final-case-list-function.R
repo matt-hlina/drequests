@@ -13,14 +13,6 @@
 
 case_list <- function(df1) {
   data_set <- df1 %>%
-    {
-      if ("not_public" %in% names(.)) {
-        dplyr::filter(., not_public == 0) %>%
-          group_by(not_public)
-      } else {
-        .
-      }
-    } %>%
     dplyr::mutate(dplyr::across(
       c(
         county, Agecat, sex, race, severity, typecust, presumpt, plea,
