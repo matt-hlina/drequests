@@ -177,8 +177,6 @@ county_data_request <- function(data,
   # Determine the number of non-public cases within the parameters of the request #
   non_public_cases(data, filters)
 
-  # Create case list #
-
   # filter for cases of interest to the requester, removing non-public cases
   df1 <- requested_cases(data, filters, case_list = 1) # function found in filter-function.R
 
