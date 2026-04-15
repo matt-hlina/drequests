@@ -6,12 +6,14 @@
 #'
 #' @param data 'data.frame' of Sentencing Guidelines public data set.
 #' @param filters a named list of all arguments passed to the function.
+#' @param case_list use values 0 and 1 depending on if the function is used for
+#' a case list (1) (non-public files need to be removed) or not a case list (0).
 #'
 #' @return A filtered data frame.
 #' @keywords internal
 #' @name filter_function
 
-requested_cases <- function(data, filters) {
+requested_cases <- function(data, filters, case_list) {
   df1 <- data
 
   for (name in names(filters)) {
@@ -70,14 +72,18 @@ requested_cases <- function(data, filters) {
     }
   }
 
-  # for removing non-public cases
-  if ("not_public" %in% names(df1)) {
-    df1 <- df1 %>%
-      dplyr::filter(not_public == 0)
-  }
+  # for removing non-public cases from the case list
+  if (case_list == 1) {
+    if ("not_public" %in% names(df1)) {
+      df1 <- df1 %>%
+        dplyr::filter(not_public == 0)
+    }
+    else if (!"not_public" %in% names(df1)) {
+      print("The variable not_public was not found in the data. Use data where non-public data can be identified.")
+    }
 
-  else if (!"not_public" %in% names(df1)) {
-    print("The variable not_public was not found in the data. Use data where non-public data can be identified.")
+  } else if (case_list != 1) {
+    df1 <- df1
   }
 
   return(df1)
