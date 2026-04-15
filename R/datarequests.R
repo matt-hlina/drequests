@@ -39,6 +39,10 @@ chs_data_request <- function(data,
   # Everything below is pipeline
   ###########################################################################
 
+  # Determine the number of non-public cases within the parameters of the request #
+
+  non_public_cases(data, filters)
+
   # Create case list #
 
   # filter for cases of interest to the requester
