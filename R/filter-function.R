@@ -70,5 +70,16 @@ requested_cases <- function(data, filters) {
     }
   }
 
+  # for removing non-public cases
+  if ("not_public" %in% names(df1)) {
+    df1 <- df1 %>%
+      dplyr::filter(not_public == 0)
+  }
+
+  else if (!"not_public" %in% names(df1)) {
+    print("The variable not_public was not found in the data. Use data where
+          non-public data can be identified.")
+  }
+
   return(df1)
 }
