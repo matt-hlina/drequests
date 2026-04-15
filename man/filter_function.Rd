@@ -5,12 +5,15 @@
 \alias{requested_cases}
 \title{Filter function}
 \usage{
-requested_cases(data, filters)
+requested_cases(data, filters, case_list)
 }
 \arguments{
 \item{data}{'data.frame' of Sentencing Guidelines public data set.}
 
 \item{filters}{a named list of all arguments passed to the function.}
+
+\item{case_list}{use values 0 and 1 depending on if the function is used for
+a case list (1) (non-public files need to be removed) or not a case list (0).}
 }
 \value{
 A filtered data frame.
