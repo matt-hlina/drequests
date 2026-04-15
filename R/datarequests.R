@@ -45,8 +45,8 @@ chs_data_request <- function(data,
 
   # Create case list #
 
-  # filter for cases of interest to the requester
-  df1 <- requested_cases(data, filters) # function found in filter-function.R
+  # filter for cases of interest to the requester, removing non-public cases
+  df1 <- requested_cases(data, filters, case_list = 1) # function found in filter-function.R
 
   # select only the necessary variables for the final case list
   data_set <- case_list(df1) # function found in final-case-list-function.R
@@ -63,23 +63,27 @@ chs_data_request <- function(data,
 
   ########################################################################
   # Create report tables #
+
+  # filter for cases of interest to the requester, preserving non-public cases for analysis
+  df2 <- requested_cases(data, filters, case_list = 0) # function found in filter-function.R
+
   # Total cases by CHS
-  table_total_cases <- total_cases_by_chs(df1)
+  table_total_cases <- total_cases_by_chs(df2)
 
   # Cases by Presumptive Disposition
-  out <- pres_disp_cases(df1)
+  out <- pres_disp_cases(df2)
 
   table_pres_disp <- out$table_pres_disp
   pres_disp_df <- out$pres_disp
 
   # Cases by Dispositional Departures
-  table_disp_dep <- disp_dep_cases(df1, pres_disp_df)
+  table_disp_dep <- disp_dep_cases(df2, pres_disp_df)
 
   # Cases by Durational Departures
-  table_dur_dep <- dur_dep_cases(df1)
+  table_dur_dep <- dur_dep_cases(df2)
 
   # Avg prison duration at each CHS
-  table_pris_dur <- prison_duration(df1)
+  table_pris_dur <- prison_duration(df2)
 
   # Combine all into one final table
   final_chs_table <- final_chs_table(table_total_cases, table_pres_disp, table_disp_dep,
@@ -90,11 +94,11 @@ chs_data_request <- function(data,
   ################################################################
 
   # Mitigated dispositional departure reasons
-  mdd_reasons <- dep_reasons(df1, dep_type = "mit_disp")
+  mdd_reasons <- dep_reasons(df2, dep_type = "mit_disp")
 
   ############################################
   # Mitigated durational departure reasons
-  mit_dur_dep_reasons <- dep_reasons(df1, dep_type = "mit_dur")
+  mit_dur_dep_reasons <- dep_reasons(df2, dep_type = "mit_dur")
 
 
   ################################################################
@@ -102,11 +106,11 @@ chs_data_request <- function(data,
   ################################################################
 
   # Mitigated dispositional departure reasons
-  mit_disp_plea_df <- dep_plea_reasons(df1, dep_type = "mit_disp")
+  mit_disp_plea_df <- dep_plea_reasons(df2, dep_type = "mit_disp")
 
   ############################################
   # Mitigated durational departure reasons
-  mit_dur_plea_df <- dep_plea_reasons(df1, dep_type = "mit_dur")
+  mit_dur_plea_df <- dep_plea_reasons(df2, dep_type = "mit_dur")
 
 
   ###########################################################################
@@ -170,8 +174,13 @@ county_data_request <- function(data,
 
   # Create case list #
 
-  # filter for cases of interest to the requester
-  df1 <- requested_cases(data, filters) # function found in filter-function.R
+  # Determine the number of non-public cases within the parameters of the request #
+  non_public_cases(data, filters)
+
+  # Create case list #
+
+  # filter for cases of interest to the requester, removing non-public cases
+  df1 <- requested_cases(data, filters, case_list = 1) # function found in filter-function.R
 
   # select only the necessary variables for the final case list
   data_set <- case_list(df1) # function found in final-case-list-function.R
@@ -187,23 +196,27 @@ county_data_request <- function(data,
 
   ########################################################################
   # Create report tables #
+
+  # filter for cases of interest to the requester, preserving non-public cases for analysis
+  df2 <- requested_cases(data, filters, case_list = 0) # function found in filter-function.R
+
   # Total cases by CHS
-  table_total_cases <- total_cases_by_county(df1)
+  table_total_cases <- total_cases_by_county(df2)
 
   # Cases by Presumptive Disposition
-  out <- pres_disp_cases_by_county(df1)
+  out <- pres_disp_cases_by_county(df2)
 
   table_pres_disp <- out$table_pres_disp
   pres_disp_df <- out$pres_disp_county
 
   # Cases by Dispositional Departures
-  table_disp_dep <- disp_dep_cases_by_county(df1, pres_disp_df)
+  table_disp_dep <- disp_dep_cases_by_county(df2, pres_disp_df)
 
   # Cases by Durational Departures
-  table_dur_dep <- dur_dep_cases_by_county(df1, table_total_cases)
+  table_dur_dep <- dur_dep_cases_by_county(df2, table_total_cases)
 
   # Avg prison duration at each CHS
-  table_pris_dur <- prison_duration_by_county(df1, table_total_cases)
+  table_pris_dur <- prison_duration_by_county(df2, table_total_cases)
 
   # Combine all into one final table
   final_county_table <- final_table_by_county(table_total_cases,
@@ -217,11 +230,11 @@ county_data_request <- function(data,
   ################################################################
 
   # Mitigated dispositional departure reasons
-  mdd_reasons <- dep_reasons(df1, dep_type = "mit_disp")
+  mdd_reasons <- dep_reasons(df2, dep_type = "mit_disp")
 
   ############################################
   # Mitigated durational departure reasons
-  mit_dur_dep_reasons <- dep_reasons(df1, dep_type = "mit_dur")
+  mit_dur_dep_reasons <- dep_reasons(df2, dep_type = "mit_dur")
 
 
   ################################################################
@@ -229,11 +242,11 @@ county_data_request <- function(data,
   ################################################################
 
   # Mitigated dispositional departure reasons
-  mit_disp_plea_df <- dep_plea_reasons(df1, dep_type = "mit_disp")
+  mit_disp_plea_df <- dep_plea_reasons(df2, dep_type = "mit_disp")
 
   ############################################
   # Mitigated durational departure reasons
-  mit_dur_plea_df <- dep_plea_reasons(df1, dep_type = "mit_dur")
+  mit_dur_plea_df <- dep_plea_reasons(df2, dep_type = "mit_dur")
 
 
   ###########################################################################
