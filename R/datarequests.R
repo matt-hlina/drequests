@@ -44,6 +44,9 @@ chs_data_request <- function(data,
   # filter for cases of interest to the requester
   df1 <- requested_cases(data, filters) # function found in filter-function.R
 
+  # identify the number of non-public cases
+  non_public_cases(df1) # from non-public-cases-function.R
+
   # select only the necessary variables for the final case list
   data_set <- case_list(df1) # function found in final-case-list-function.R
 
