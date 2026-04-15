@@ -2,7 +2,7 @@
 # Function used to identify the number of non-public cases removed from data
 ############################################################################
 
-#' Cosmetic function
+#' Non-public function
 #'
 #' @param data a filtered 'data.frame' of the cases requested in the data request.
 #'
